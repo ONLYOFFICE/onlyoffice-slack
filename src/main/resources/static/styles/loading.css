@@ -8,8 +8,8 @@
     --body-bg: #f5f5f5;
     --container-bg: #fff;
     --shadow: rgba(0, 0, 0, 0.1);
-    --error-bg: #fee;
-    --error-text: #c53030;
+    --error-bg: #fff;
+    --error-text: #222;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,8 +23,8 @@
         --body-bg: #1a1d21;
         --container-bg: #1a1d21;
         --shadow: rgba(255, 255, 255, 0.1);
-        --error-bg: #2d1b1b;
-        --error-text: #feb2b2;
+        --error-bg: #1a1d21;
+        --error-text: #fff;
     }
 }
 
