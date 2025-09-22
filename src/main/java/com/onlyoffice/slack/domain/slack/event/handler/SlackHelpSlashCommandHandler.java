@@ -95,7 +95,7 @@ class SlackHelpSlashCommandHandler implements SlackSlashCommandHandlerRegistrar 
                                                         locale)))
                                             .style("primary")
                                             .actionId(slackProperties.getLearnMoreActionId())
-                                            .url(slackProperties.getGetCloudUrl())))),
+                                            .url(slackProperties.getWelcomeReadMoreUrl())))),
                 section(
                     section ->
                         section

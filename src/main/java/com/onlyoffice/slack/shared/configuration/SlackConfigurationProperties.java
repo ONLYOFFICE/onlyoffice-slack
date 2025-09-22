@@ -40,6 +40,7 @@ public class SlackConfigurationProperties {
   private String editorPathPattern = "%s/editor?session=%s&locale=%s";
 
   private String welcomeReadMoreUrl = "https://github.com/ONLYOFFICE/onlyoffice-slack";
-  private String welcomeSuggestFeatureUrl = "https://github.com/ONLYOFFICE/onlyoffice-slack/issues";
-  private String getCloudUrl = "https://www.onlyoffice.com";
+  private String welcomeSuggestFeatureUrl =
+      "https://feedback.onlyoffice.com/forums/966080-your-voice-matters?category_id=519288";
+  private String getCloudUrl = "https://www.onlyoffice.com/docs-registration.aspx?referer=slack";
 }
