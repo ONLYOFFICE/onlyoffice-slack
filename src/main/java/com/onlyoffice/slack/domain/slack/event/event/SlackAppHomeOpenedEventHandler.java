@@ -6,7 +6,6 @@ import static com.slack.api.model.block.element.BlockElements.*;
 import static com.slack.api.model.view.Views.view;
 
 import com.onlyoffice.slack.domain.slack.settings.SettingsService;
-import com.onlyoffice.slack.shared.configuration.ServerConfigurationProperties;
 import com.onlyoffice.slack.shared.configuration.SlackConfigurationProperties;
 import com.onlyoffice.slack.shared.configuration.message.MessageSourceSlackConfiguration;
 import com.onlyoffice.slack.shared.exception.domain.DocumentSettingsConfigurationException;
@@ -32,7 +31,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEvent> {
   private final MessageSourceSlackConfiguration messageSourceSlackConfiguration;
-  private final ServerConfigurationProperties serverConfigurationProperties;
   private final SlackConfigurationProperties slackConfigurationProperties;
 
   private final SettingsService settingsService;
@@ -88,6 +86,13 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                         plainTextInput(
                             pti ->
                                 pti.actionId("secret_input")
+                                    .placeholder(
+                                        plainText(
+                                            messageSource.getMessage(
+                                                messageSourceSlackConfiguration
+                                                    .getMessageHomeInputSecretPlaceholder(),
+                                                null,
+                                                Locale.ENGLISH)))
                                     .initialValue(settings == null ? "" : settings.getSecret())))));
     inputs.add(
         context(
@@ -113,6 +118,13 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                         plainTextInput(
                             pti ->
                                 pti.actionId("header_input")
+                                    .placeholder(
+                                        plainText(
+                                            messageSource.getMessage(
+                                                messageSourceSlackConfiguration
+                                                    .getMessageHomeInputHeaderPlaceholder(),
+                                                null,
+                                                Locale.ENGLISH)))
                                     .initialValue(settings == null ? "" : settings.getHeader())))));
     inputs.add(
         context(

@@ -62,7 +62,9 @@ public class MessageSourceSlackConfiguration {
   private String messageHomeInputHttpsAddressLabel = "home.input.httpsAddress.label";
   private String messageHomeInputHttpsAddressPlaceholder = "home.input.httpsAddress.placeholder";
   private String messageHomeInputSecretLabel = "home.input.secret.label";
+  private String messageHomeInputSecretPlaceholder = "home.input.secret.placeholder";
   private String messageHomeInputHeaderLabel = "home.input.header.label";
+  private String messageHomeInputHeaderPlaceholder = "home.input.header.placeholder";
   private String messageHomeInputDemoSettingsLabel = "home.input.demoSettings.label";
   private String messageHomeCheckboxEnableDemo = "home.checkbox.enableDemo";
   private String messageHomeButtonSaveSettings = "home.button.saveSettings";
