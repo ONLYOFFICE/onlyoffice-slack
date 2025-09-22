@@ -11,13 +11,13 @@ import com.onlyoffice.slack.shared.configuration.message.MessageSourceSlackConfi
 import com.onlyoffice.slack.shared.transfer.cache.EditorSession;
 import com.onlyoffice.slack.shared.transfer.command.BuildConfigCommand;
 import com.onlyoffice.slack.shared.transfer.response.SettingsResponse;
+import com.onlyoffice.slack.shared.utils.LocaleUtils;
 import com.slack.api.bolt.App;
 import com.slack.api.bolt.model.Installer;
 import com.slack.api.methods.request.users.UsersInfoRequest;
 import com.slack.api.methods.response.files.FilesInfoResponse;
 import com.slack.api.methods.response.users.UsersInfoResponse;
 import jakarta.validation.ConstraintViolationException;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -42,6 +42,7 @@ class DocumentEditorController {
   private final MessageSourceSlackConfiguration messageSourceSlackConfiguration;
 
   private final App app;
+  private final LocaleUtils localeUtils;
   private final MessageSource messageSource;
   private final SettingsService settingsService;
   private final IMap<String, EditorSession> sessions;
@@ -49,28 +50,32 @@ class DocumentEditorController {
   private final DocumentConfigManagerService documentConfigManagerService;
 
   @GetMapping(path = "/editor")
-  public String editor(@RequestParam("session") final String sessionId, final Model model) {
+  public String editor(
+      @RequestParam("session") final String sessionId,
+      @RequestParam(value = "locale", defaultValue = "en-US") String locale,
+      final Model model) {
+    var lang = localeUtils.toLocale(locale);
     model.addAttribute("sid", sessionId);
     model.addAttribute(
         "title",
         messageSource.getMessage(
-            messageSourceSlackConfiguration.getMessageLoadingTitle(), null, Locale.ENGLISH));
+            messageSourceSlackConfiguration.getMessageLoadingTitle(), null, lang));
     model.addAttribute(
         "description",
         messageSource.getMessage(
-            messageSourceSlackConfiguration.getMessageLoadingDescription(), null, Locale.ENGLISH));
+            messageSourceSlackConfiguration.getMessageLoadingDescription(), null, lang));
     model.addAttribute(
         "error",
         messageSource.getMessage(
-            messageSourceSlackConfiguration.getMessageLoadingError(), null, Locale.ENGLISH));
+            messageSourceSlackConfiguration.getMessageLoadingError(), null, lang));
     model.addAttribute(
         "retry",
         messageSource.getMessage(
-            messageSourceSlackConfiguration.getMessageLoadingRetry(), null, Locale.ENGLISH));
+            messageSourceSlackConfiguration.getMessageLoadingRetry(), null, lang));
     model.addAttribute(
         "cancel",
         messageSource.getMessage(
-            messageSourceSlackConfiguration.getMessageLoadingCancel(), null, Locale.ENGLISH));
+            messageSourceSlackConfiguration.getMessageLoadingCancel(), null, lang));
 
     return "document/loading";
   }
@@ -129,21 +134,25 @@ class DocumentEditorController {
   }
 
   @GetMapping(path = "/editor/content")
-  public String editorContent(@RequestParam("session") final String sessionId, final Model model) {
+  public String editorContent(
+      @RequestParam("session") final String sessionId,
+      @RequestParam(value = "locale", defaultValue = "en-US") String locale,
+      final Model model) {
+    var lang = localeUtils.toLocale(locale);
     var storedSession = retrieveAndRemoveSession(sessionId);
     if (storedSession.isEmpty()) {
       model.addAttribute(
           "title",
           messageSource.getMessage(
-              messageSourceSlackConfiguration.getErrorSessionTitle(), null, Locale.ENGLISH));
+              messageSourceSlackConfiguration.getErrorSessionTitle(), null, lang));
       model.addAttribute(
           "text",
           messageSource.getMessage(
-              messageSourceSlackConfiguration.getErrorSessionText(), null, Locale.ENGLISH));
+              messageSourceSlackConfiguration.getErrorSessionText(), null, lang));
       model.addAttribute(
           "button",
           messageSource.getMessage(
-              messageSourceSlackConfiguration.getErrorSessionButton(), null, Locale.ENGLISH));
+              messageSourceSlackConfiguration.getErrorSessionButton(), null, lang));
 
       return "errors/bad_session";
     }
@@ -155,15 +164,15 @@ class DocumentEditorController {
       model.addAttribute(
           "title",
           messageSource.getMessage(
-              messageSourceSlackConfiguration.getErrorAvailableTitle(), null, Locale.ENGLISH));
+              messageSourceSlackConfiguration.getErrorAvailableTitle(), null, lang));
       model.addAttribute(
           "text",
           messageSource.getMessage(
-              messageSourceSlackConfiguration.getErrorAvailableText(), null, Locale.ENGLISH));
+              messageSourceSlackConfiguration.getErrorAvailableText(), null, lang));
       model.addAttribute(
           "button",
           messageSource.getMessage(
-              messageSourceSlackConfiguration.getErrorAvailableButton(), null, Locale.ENGLISH));
+              messageSourceSlackConfiguration.getErrorAvailableButton(), null, lang));
 
       return "errors/not_available";
     }
@@ -188,15 +197,15 @@ class DocumentEditorController {
         model.addAttribute(
             "title",
             messageSource.getMessage(
-                messageSourceSlackConfiguration.getErrorSlackApiTitle(), null, Locale.ENGLISH));
+                messageSourceSlackConfiguration.getErrorSlackApiTitle(), null, lang));
         model.addAttribute(
             "text",
             messageSource.getMessage(
-                messageSourceSlackConfiguration.getErrorSlackApiText(), null, Locale.ENGLISH));
+                messageSourceSlackConfiguration.getErrorSlackApiText(), null, lang));
         model.addAttribute(
             "button",
             messageSource.getMessage(
-                messageSourceSlackConfiguration.getErrorSlackApiButton(), null, Locale.ENGLISH));
+                messageSourceSlackConfiguration.getErrorSlackApiButton(), null, lang));
 
         return "errors/bad_slack";
       }
@@ -211,6 +220,7 @@ class DocumentEditorController {
                   .file(fileInfoOpt.get().getFile())
                   .mode(Mode.EDIT)
                   .type(Type.DESKTOP)
+                  .locale(locale)
                   .build());
 
       model.addAttribute("config", config);
@@ -219,35 +229,37 @@ class DocumentEditorController {
 
       return "document/editor";
     } catch (InterruptedException | ExecutionException e) {
+      log.error("Something went wrong", e);
       model.addAttribute(
           "title",
           messageSource.getMessage(
-              messageSourceSlackConfiguration.getErrorSlackApiTitle(), null, Locale.ENGLISH));
+              messageSourceSlackConfiguration.getErrorSlackApiTitle(), null, lang));
       model.addAttribute(
           "text",
           messageSource.getMessage(
-              messageSourceSlackConfiguration.getErrorSlackApiText(), null, Locale.ENGLISH));
+              messageSourceSlackConfiguration.getErrorSlackApiText(), null, lang));
       model.addAttribute(
           "button",
           messageSource.getMessage(
-              messageSourceSlackConfiguration.getErrorSlackApiButton(), null, Locale.ENGLISH));
+              messageSourceSlackConfiguration.getErrorSlackApiButton(), null, lang));
 
       return "errors/bad_slack";
     } catch (ConstraintViolationException e) {
+      log.error("Something went wrong", e);
       model.addAttribute(
           "title",
           messageSource.getMessage(
-              messageSourceSlackConfiguration.getErrorSettingsTitle(), null, Locale.ENGLISH));
+              messageSourceSlackConfiguration.getErrorSettingsTitle(), null, lang));
       model.addAttribute(
           "text",
           messageSource.getMessage(
               messageSourceSlackConfiguration.getErrorSettingsInvalidConfigurationText(),
               null,
-              Locale.ENGLISH));
+              lang));
       model.addAttribute(
           "button",
           messageSource.getMessage(
-              messageSourceSlackConfiguration.getErrorSettingsButton(), null, Locale.ENGLISH));
+              messageSourceSlackConfiguration.getErrorSettingsButton(), null, lang));
 
       return "errors/no_settings";
     }

@@ -37,7 +37,7 @@ public class SlackConfigurationProperties {
   private String learnMoreActionId = "learn_more";
 
   private String downloadPathPattern = "%s/download/%s";
-  private String editorPathPattern = "%s/editor?session=%s";
+  private String editorPathPattern = "%s/editor?session=%s&locale=%s";
 
   private String welcomeReadMoreUrl = "https://github.com/ONLYOFFICE/onlyoffice-slack";
   private String welcomeSuggestFeatureUrl = "https://github.com/ONLYOFFICE/onlyoffice-slack/issues";

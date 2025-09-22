@@ -7,9 +7,10 @@ import static com.slack.api.model.block.element.BlockElements.*;
 import com.onlyoffice.slack.domain.slack.event.registry.SlackSlashCommandHandlerRegistrar;
 import com.onlyoffice.slack.shared.configuration.SlackConfigurationProperties;
 import com.onlyoffice.slack.shared.configuration.message.MessageSourceSlackConfiguration;
+import com.onlyoffice.slack.shared.utils.LocaleUtils;
 import com.slack.api.bolt.handler.builtin.SlashCommandHandler;
+import com.slack.api.methods.request.users.UsersInfoRequest;
 import java.util.List;
-import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -24,6 +25,7 @@ class SlackHelpSlashCommandHandler implements SlackSlashCommandHandlerRegistrar 
   private final SlackConfigurationProperties slackProperties;
 
   private final MessageSource messageSource;
+  private final LocaleUtils localeUtils;
 
   @Override
   public String getSlash() {
@@ -40,6 +42,21 @@ class SlackHelpSlashCommandHandler implements SlackSlashCommandHandlerRegistrar 
 
         log.info("Sending ephemeral message via /help command");
 
+        var lang = "en-US";
+        var userInfo =
+            ctx.client()
+                .usersInfo(
+                    UsersInfoRequest.builder()
+                        .user(ctx.getRequestUserId())
+                        .token(ctx.getRequestUserToken())
+                        .includeLocale(true)
+                        .build());
+
+        if (userInfo.isOk() && userInfo.getUser().getLocale() != null)
+          lang = userInfo.getUser().getLocale();
+
+        var locale = localeUtils.toLocale(lang);
+
         var userId = req.getPayload().getUserId();
         var blocks =
             List.of(
@@ -50,15 +67,13 @@ class SlackHelpSlashCommandHandler implements SlackSlashCommandHandlerRegistrar 
                                 messageSource.getMessage(
                                     messageConfig.getMessageHelpGreeting(),
                                     new Object[] {userId},
-                                    Locale.getDefault())))),
+                                    locale)))),
                 section(
                     section ->
                         section.text(
                             markdownText(
                                 messageSource.getMessage(
-                                    messageConfig.getMessageHelpInstructions(),
-                                    null,
-                                    Locale.getDefault())))),
+                                    messageConfig.getMessageHelpInstructions(), null, locale)))),
                 divider(),
                 section(
                     section ->
@@ -66,9 +81,7 @@ class SlackHelpSlashCommandHandler implements SlackSlashCommandHandlerRegistrar 
                             .text(
                                 markdownText(
                                     messageSource.getMessage(
-                                        messageConfig.getMessageHelpLearnMore(),
-                                        null,
-                                        Locale.getDefault())))
+                                        messageConfig.getMessageHelpLearnMore(), null, locale)))
                             .accessory(
                                 button(
                                     button ->
@@ -79,7 +92,7 @@ class SlackHelpSlashCommandHandler implements SlackSlashCommandHandlerRegistrar 
                                                         messageConfig
                                                             .getMessageHelpLearnMoreButton(),
                                                         null,
-                                                        Locale.getDefault())))
+                                                        locale)))
                                             .style("primary")
                                             .actionId(slackProperties.getLearnMoreActionId())
                                             .url(slackProperties.getGetCloudUrl())))),
@@ -89,9 +102,7 @@ class SlackHelpSlashCommandHandler implements SlackSlashCommandHandlerRegistrar 
                             .text(
                                 markdownText(
                                     messageSource.getMessage(
-                                        messageConfig.getMessageHelpFeedback(),
-                                        null,
-                                        Locale.getDefault())))
+                                        messageConfig.getMessageHelpFeedback(), null, locale)))
                             .accessory(
                                 button(
                                     button ->
@@ -102,7 +113,7 @@ class SlackHelpSlashCommandHandler implements SlackSlashCommandHandlerRegistrar 
                                                         messageConfig
                                                             .getMessageHelpFeedbackButton(),
                                                         null,
-                                                        Locale.getDefault())))
+                                                        locale)))
                                             .actionId(slackProperties.getShareFeedbackActionId())
                                             .url(slackProperties.getWelcomeSuggestFeatureUrl())))));
 

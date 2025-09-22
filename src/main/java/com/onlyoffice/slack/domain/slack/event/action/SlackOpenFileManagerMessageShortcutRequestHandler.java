@@ -8,11 +8,13 @@ import static com.slack.api.model.view.Views.*;
 import com.onlyoffice.slack.shared.configuration.ServerConfigurationProperties;
 import com.onlyoffice.slack.shared.configuration.SlackConfigurationProperties;
 import com.onlyoffice.slack.shared.configuration.message.MessageSourceSlackConfiguration;
+import com.onlyoffice.slack.shared.utils.LocaleUtils;
 import com.slack.api.bolt.context.builtin.MessageShortcutContext;
 import com.slack.api.bolt.handler.builtin.MessageShortcutHandler;
 import com.slack.api.bolt.request.builtin.MessageShortcutRequest;
 import com.slack.api.bolt.response.Response;
 import com.slack.api.methods.SlackApiException;
+import com.slack.api.methods.request.users.UsersInfoRequest;
 import com.slack.api.methods.request.views.ViewsOpenRequest;
 import com.slack.api.model.File;
 import com.slack.api.model.Message;
@@ -40,18 +42,20 @@ class SlackOpenFileManagerMessageShortcutRequestHandler implements MessageShortc
   private final SlackPrivateMetadataBuilder slackPrivateMetadataBuilder;
   private final SlackFileActionBuilder slackFileActionBuilder;
   private final MessageSource messageSource;
+  private final LocaleUtils localeUtils;
 
-  private String buildEditorUrl(final String sessionId) {
+  private String buildEditorUrl(final String sessionId, final Locale locale) {
     return slackConfigurationProperties
         .getEditorPathPattern()
-        .formatted(serverConfigurationProperties.getBaseAddress(), sessionId);
+        .formatted(serverConfigurationProperties.getBaseAddress(), sessionId, locale);
   }
 
   private boolean hasFiles(final Message message) {
     return message != null && message.getFiles() != null && !message.getFiles().isEmpty();
   }
 
-  private void addFileBlock(final String userId, final List<LayoutBlock> blocks, final File file) {
+  private void addFileBlock(
+      final String userId, final List<LayoutBlock> blocks, final File file, final Locale locale) {
     blocks.add(divider());
     if (file.getSize() > MAX_FILE_SIZE) {
       blocks.add(
@@ -76,9 +80,9 @@ class SlackOpenFileManagerMessageShortcutRequestHandler implements MessageShortc
                             messageSource.getMessage(
                                 messageSourceSlackConfiguration.getMessageManagerModalOpenButton(),
                                 null,
-                                Locale.ENGLISH)))
+                                locale)))
                     .value(sessionId)
-                    .url(buildEditorUrl(sessionId))
+                    .url(buildEditorUrl(sessionId, locale))
                     .actionId(slackConfigurationProperties.getOpenFileActionId())
                     .style("primary"));
     blocks.add(
@@ -88,7 +92,8 @@ class SlackOpenFileManagerMessageShortcutRequestHandler implements MessageShortc
                     .accessory(openButton)));
   }
 
-  private List<LayoutBlock> buildFileBlocks(final String userId, final Message message) {
+  private List<LayoutBlock> buildFileBlocks(
+      final String userId, final Message message, final Locale locale) {
     var blocks = new ArrayList<LayoutBlock>();
     blocks.add(
         header(
@@ -98,11 +103,11 @@ class SlackOpenFileManagerMessageShortcutRequestHandler implements MessageShortc
                         messageSource.getMessage(
                             messageSourceSlackConfiguration.getMessageManagerModalHeader(),
                             null,
-                            Locale.ENGLISH)))));
+                            locale)))));
 
     if (hasFiles(message)) {
       log.info("Found {} files in message", message.getFiles().size());
-      message.getFiles().forEach(file -> addFileBlock(userId, blocks, file));
+      message.getFiles().forEach(file -> addFileBlock(userId, blocks, file, locale));
     } else {
       log.info("No files found in message");
       blocks.add(
@@ -113,7 +118,7 @@ class SlackOpenFileManagerMessageShortcutRequestHandler implements MessageShortc
                           messageSource.getMessage(
                               messageSourceSlackConfiguration.getMessageManagerModalNoFilesFound(),
                               null,
-                              Locale.ENGLISH)))));
+                              locale)))));
     }
 
     return blocks;
@@ -122,7 +127,8 @@ class SlackOpenFileManagerMessageShortcutRequestHandler implements MessageShortc
   private void openFilesModal(
       final MessageShortcutContext ctx,
       final MessageShortcutRequest request,
-      final List<LayoutBlock> blocks)
+      final List<LayoutBlock> blocks,
+      final Locale locale)
       throws IOException, SlackApiException {
     var message = request.getPayload().getMessage();
     ctx.client()
@@ -144,7 +150,7 @@ class SlackOpenFileManagerMessageShortcutRequestHandler implements MessageShortc
                                                         messageSourceSlackConfiguration
                                                             .getMessageManagerModalTitle(),
                                                         null,
-                                                        Locale.ENGLISH))))
+                                                        locale))))
                                 .close(
                                     viewClose(
                                         close ->
@@ -155,7 +161,7 @@ class SlackOpenFileManagerMessageShortcutRequestHandler implements MessageShortc
                                                         messageSourceSlackConfiguration
                                                             .getMessageManagerModalCloseButton(),
                                                         null,
-                                                        Locale.ENGLISH))))
+                                                        locale))))
                                 .blocks(blocks)
                                 .privateMetadata(
                                     slackPrivateMetadataBuilder.build(
@@ -166,8 +172,26 @@ class SlackOpenFileManagerMessageShortcutRequestHandler implements MessageShortc
   @Override
   public Response apply(MessageShortcutRequest request, MessageShortcutContext ctx)
       throws IOException, SlackApiException {
+    var lang = "en-US";
+    var userInfo =
+        ctx.client()
+            .usersInfo(
+                UsersInfoRequest.builder()
+                    .user(ctx.getRequestUserId())
+                    .token(ctx.getRequestUserToken())
+                    .includeLocale(true)
+                    .build());
+
+    if (userInfo.isOk() && userInfo.getUser().getLocale() != null)
+      lang = userInfo.getUser().getLocale();
+
+    var locale = localeUtils.toLocale(lang);
+
     openFilesModal(
-        ctx, request, buildFileBlocks(ctx.getRequestUserId(), request.getPayload().getMessage()));
+        ctx,
+        request,
+        buildFileBlocks(ctx.getRequestUserId(), request.getPayload().getMessage(), locale),
+        locale);
     return ctx.ack();
   }
 }

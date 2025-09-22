@@ -14,6 +14,7 @@ import com.onlyoffice.slack.shared.configuration.ServerConfigurationProperties;
 import com.onlyoffice.slack.shared.configuration.message.MessageSourceSlackConfiguration;
 import com.onlyoffice.slack.shared.transfer.cache.EditorSession;
 import com.onlyoffice.slack.shared.transfer.response.SettingsResponse;
+import com.onlyoffice.slack.shared.utils.LocaleUtils;
 import com.slack.api.Slack;
 import com.slack.api.bolt.App;
 import com.slack.api.bolt.model.Installer;
@@ -24,6 +25,7 @@ import com.slack.api.methods.response.files.FilesInfoResponse;
 import com.slack.api.methods.response.users.UsersInfoResponse;
 import com.slack.api.model.File;
 import com.slack.api.model.User;
+import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.MessageSource;
@@ -34,6 +36,7 @@ class DocumentEditorControllerTests {
 
   private App app;
   private IMap sessions;
+  private LocaleUtils localeUtils;
 
   private Model model;
   private DocumentEditorController controller;
@@ -120,6 +123,7 @@ class DocumentEditorControllerTests {
     app = mock(App.class);
     model = mock(Model.class);
     sessions = mock(IMap.class);
+    localeUtils = mock(LocaleUtils.class);
     teamSettingsService = mock(SettingsService.class);
     rotatingInstallationService = mock(RotatingInstallationService.class);
     serverConfigurationProperties = mock(ServerConfigurationProperties.class);
@@ -133,6 +137,7 @@ class DocumentEditorControllerTests {
             serverConfigurationProperties,
             messageSourceSlackConfiguration,
             app,
+            localeUtils,
             messageSource,
             teamSettingsService,
             sessions,
@@ -144,7 +149,9 @@ class DocumentEditorControllerTests {
   void whenEditorCalled_thenReturnsLoadingView() {
     var sessionId = "session-id";
 
-    var result = controller.editor(sessionId, model);
+    when(localeUtils.toLocale(anyString())).thenReturn(Locale.ENGLISH);
+
+    var result = controller.editor(sessionId, "en-US", model);
 
     assertEquals("document/loading", result);
   }
@@ -154,8 +161,9 @@ class DocumentEditorControllerTests {
     var sessionId = "expired-session-id";
 
     when(sessions.remove(sessionId)).thenReturn(null);
+    when(localeUtils.toLocale(anyString())).thenReturn(Locale.ENGLISH);
 
-    var result = controller.editorContent(sessionId, model);
+    var result = controller.editorContent(sessionId, "en-US", model);
 
     assertEquals("errors/bad_session", result);
   }
@@ -168,8 +176,9 @@ class DocumentEditorControllerTests {
     when(sessions.remove(sessionId)).thenReturn(session);
     when(rotatingInstallationService.findInstallerWithRotation(null, "team", "user"))
         .thenReturn(null);
+    when(localeUtils.toLocale(anyString())).thenReturn(Locale.ENGLISH);
 
-    var result = controller.editorContent(sessionId, model);
+    var result = controller.editorContent(sessionId, "en-US", model);
 
     assertEquals("errors/not_available", result);
   }
@@ -186,6 +195,7 @@ class DocumentEditorControllerTests {
     var methodsClient = mock(MethodsClient.class);
 
     when(sessions.remove(sessionId)).thenReturn(session);
+    when(localeUtils.toLocale(anyString())).thenReturn(Locale.ENGLISH);
     when(rotatingInstallationService.findInstallerWithRotation(null, "team", "user"))
         .thenReturn(installer);
     when(teamSettingsService.findSettings("team")).thenReturn(settings);
@@ -199,7 +209,7 @@ class DocumentEditorControllerTests {
     } catch (Exception e) {
     }
 
-    var result = controller.editorContent(sessionId, model);
+    var result = controller.editorContent(sessionId, "en-US", model);
 
     assertEquals("errors/bad_slack", result);
   }
@@ -214,6 +224,7 @@ class DocumentEditorControllerTests {
     var methodsClient = mock(MethodsClient.class);
 
     when(sessions.remove(sessionId)).thenReturn(session);
+    when(localeUtils.toLocale(anyString())).thenReturn(Locale.ENGLISH);
     when(rotatingInstallationService.findInstallerWithRotation(null, "team", "user"))
         .thenReturn(installer);
     when(teamSettingsService.findSettings("team")).thenReturn(settings);
@@ -225,7 +236,7 @@ class DocumentEditorControllerTests {
     } catch (Exception e) {
     }
 
-    var result = controller.editorContent(sessionId, model);
+    var result = controller.editorContent(sessionId, "en-US", model);
 
     assertEquals("errors/bad_slack", result);
   }
@@ -239,6 +250,7 @@ class DocumentEditorControllerTests {
     var methodsClient = mock(MethodsClient.class);
 
     when(sessions.remove(sessionId)).thenReturn(session);
+    when(localeUtils.toLocale(anyString())).thenReturn(Locale.ENGLISH);
     when(rotatingInstallationService.findInstallerWithRotation(null, "team", "user"))
         .thenReturn(installer);
     when(teamSettingsService.findSettings("team")).thenReturn(settings);
@@ -251,7 +263,7 @@ class DocumentEditorControllerTests {
     } catch (Exception ignored) {
     }
 
-    var result = controller.editorContent(sessionId, model);
+    var result = controller.editorContent(sessionId, "en-US", model);
 
     assertEquals("errors/bad_slack", result);
   }
@@ -268,6 +280,7 @@ class DocumentEditorControllerTests {
     var demoConfig = createDemoConfig();
 
     when(sessions.remove(sessionId)).thenReturn(session);
+    when(localeUtils.toLocale(anyString())).thenReturn(Locale.ENGLISH);
     when(rotatingInstallationService.findInstallerWithRotation(null, "team", "user"))
         .thenReturn(installer);
     when(teamSettingsService.findSettings("team")).thenReturn(settings);
@@ -282,7 +295,7 @@ class DocumentEditorControllerTests {
     } catch (Exception ignored) {
     }
 
-    var result = controller.editorContent(sessionId, model);
+    var result = controller.editorContent(sessionId, "en-US", model);
 
     assertEquals("errors/bad_slack", result);
   }

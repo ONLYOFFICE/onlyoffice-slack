@@ -23,4 +23,5 @@ public class BuildConfigCommand {
   @NotNull private File file;
   @NotNull private Mode mode;
   @NotNull private Type type;
+  @NotNull private String locale;
 }

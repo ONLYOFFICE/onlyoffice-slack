@@ -39,6 +39,7 @@ class DocumentConfigManagerServiceImpl implements DocumentConfigManagerService {
             .editorConfig(
                 EditorConfig.builder()
                     .mode(command.getMode())
+                    .lang(command.getLocale() != null ? command.getLocale() : "en-US")
                     .user(
                         User.builder()
                             .id(user.getId())

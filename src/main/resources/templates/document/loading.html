@@ -30,6 +30,19 @@
             var sessionId = "[[${sid}]]";
             let maxWaitTime, pollInterval, startTime;
 
+            function getLocaleFromUrl() {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get('locale');
+            }
+
+            function buildUrlWithParams(baseUrl, sessionId) {
+                const locale = getLocaleFromUrl();
+                let url = `${baseUrl}?session=${encodeURIComponent(sessionId)}`;
+                if (locale)
+                    url += `&locale=${encodeURIComponent(locale)}`;
+                return url;
+            }
+
             function showError() {
                 document.querySelector('.loading-container__spinner').style.display = 'none';
                 document.querySelector('.loading-container__title').style.display = 'none';
@@ -47,11 +60,13 @@
                     return;
                 }
 
-                fetch(`/editor/status?session=${encodeURIComponent(sessionId)}`)
+                const statusUrl = buildUrlWithParams('/editor/status', sessionId);
+                fetch(statusUrl)
                     .then(response => response.json())
                     .then(data => {
                         if (data.ready) {
-                            window.location.href = `editor/content?session=${encodeURIComponent(sessionId)}`;
+                            const contentUrl = buildUrlWithParams('editor/content', sessionId);
+                            window.location.href = contentUrl;
                         } else {
                             setTimeout(checkSessionStatus, pollInterval);
                         }

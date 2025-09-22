@@ -10,11 +10,13 @@ import com.onlyoffice.slack.shared.configuration.SlackConfigurationProperties;
 import com.onlyoffice.slack.shared.configuration.message.MessageSourceSlackConfiguration;
 import com.onlyoffice.slack.shared.exception.domain.DocumentSettingsConfigurationException;
 import com.onlyoffice.slack.shared.transfer.response.SettingsResponse;
+import com.onlyoffice.slack.shared.utils.LocaleUtils;
 import com.slack.api.app_backend.events.payload.EventsApiPayload;
 import com.slack.api.bolt.context.builtin.EventContext;
 import com.slack.api.bolt.handler.BoltEventHandler;
 import com.slack.api.bolt.response.Response;
 import com.slack.api.methods.SlackApiException;
+import com.slack.api.methods.request.users.UsersInfoRequest;
 import com.slack.api.model.block.LayoutBlock;
 import com.slack.api.model.event.AppHomeOpenedEvent;
 import java.io.IOException;
@@ -35,8 +37,10 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
 
   private final SettingsService settingsService;
   private final MessageSource messageSource;
+  private final LocaleUtils localeUtils;
 
-  private List<LayoutBlock> buildSettingsInputs(final SettingsResponse settings) {
+  private List<LayoutBlock> buildSettingsInputs(
+      final SettingsResponse settings, final Locale locale) {
     var inputs = new ArrayList<LayoutBlock>();
     inputs.add(
         header(
@@ -46,7 +50,7 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                         messageSource.getMessage(
                             messageSourceSlackConfiguration.getMessageHomeSettingsTitle(),
                             null,
-                            Locale.ENGLISH)))));
+                            locale)))));
     inputs.add(divider());
     inputs.add(
         input(
@@ -58,7 +62,7 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                                 messageSourceSlackConfiguration
                                     .getMessageHomeInputHttpsAddressLabel(),
                                 null,
-                                Locale.ENGLISH)))
+                                locale)))
                     .element(
                         plainTextInput(
                             pti ->
@@ -69,7 +73,7 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                                                 messageSourceSlackConfiguration
                                                     .getMessageHomeInputHttpsAddressPlaceholder(),
                                                 null,
-                                                Locale.ENGLISH)))
+                                                locale)))
                                     .initialValue(
                                         settings == null ? "" : settings.getAddress())))));
     inputs.add(
@@ -81,7 +85,7 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                             messageSource.getMessage(
                                 messageSourceSlackConfiguration.getMessageHomeInputSecretLabel(),
                                 null,
-                                Locale.ENGLISH)))
+                                locale)))
                     .element(
                         plainTextInput(
                             pti ->
@@ -92,7 +96,7 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                                                 messageSourceSlackConfiguration
                                                     .getMessageHomeInputSecretPlaceholder(),
                                                 null,
-                                                Locale.ENGLISH)))
+                                                locale)))
                                     .initialValue(settings == null ? "" : settings.getSecret())))));
     inputs.add(
         context(
@@ -103,7 +107,7 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                             messageSource.getMessage(
                                 messageSourceSlackConfiguration.getMessageHomeSecretHelp(),
                                 null,
-                                Locale.ENGLISH))))));
+                                locale))))));
     inputs.add(
         input(
             i ->
@@ -113,7 +117,7 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                             messageSource.getMessage(
                                 messageSourceSlackConfiguration.getMessageHomeInputHeaderLabel(),
                                 null,
-                                Locale.ENGLISH)))
+                                locale)))
                     .element(
                         plainTextInput(
                             pti ->
@@ -124,7 +128,7 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                                                 messageSourceSlackConfiguration
                                                     .getMessageHomeInputHeaderPlaceholder(),
                                                 null,
-                                                Locale.ENGLISH)))
+                                                locale)))
                                     .initialValue(settings == null ? "" : settings.getHeader())))));
     inputs.add(
         context(
@@ -135,7 +139,7 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                             messageSource.getMessage(
                                 messageSourceSlackConfiguration.getMessageHomeHeaderHelp(),
                                 null,
-                                Locale.ENGLISH))))));
+                                locale))))));
     inputs.add(
         input(
             i ->
@@ -146,7 +150,7 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                                 messageSourceSlackConfiguration
                                     .getMessageHomeInputDemoSettingsLabel(),
                                 null,
-                                Locale.ENGLISH)))
+                                locale)))
                     .element(
                         checkboxes(
                             c -> {
@@ -155,7 +159,7 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                                       messageSourceSlackConfiguration
                                           .getMessageHomeCheckboxEnableDemo(),
                                       null,
-                                      Locale.ENGLISH);
+                                      locale);
                               var checkboxBuilder =
                                   c.actionId("demo_enabled_checkbox")
                                       .options(
@@ -183,12 +187,12 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                             messageSource.getMessage(
                                 messageSourceSlackConfiguration.getMessageHomeDemoHelp(),
                                 null,
-                                Locale.ENGLISH))))));
+                                locale))))));
 
     return inputs;
   }
 
-  private LayoutBlock buildSaveButtonActions() {
+  private LayoutBlock buildSaveButtonActions(final Locale locale) {
     return actions(
         actions ->
             actions.elements(
@@ -201,12 +205,12 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                                             messageSourceSlackConfiguration
                                                 .getMessageHomeButtonSaveSettings(),
                                             null,
-                                            Locale.ENGLISH)))
+                                            locale)))
                                 .actionId("submit_settings")
                                 .style("primary")))));
   }
 
-  private List<LayoutBlock> buildWelcomeBlocks() {
+  private List<LayoutBlock> buildWelcomeBlocks(final Locale locale) {
     var blocks = new ArrayList<LayoutBlock>();
     blocks.add(
         header(
@@ -216,7 +220,7 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                         messageSource.getMessage(
                             messageSourceSlackConfiguration.getMessageHomeWelcomeTitle(),
                             null,
-                            Locale.ENGLISH)))));
+                            locale)))));
     blocks.add(divider());
     blocks.add(
         section(
@@ -226,7 +230,7 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                         messageSource.getMessage(
                             messageSourceSlackConfiguration.getMessageHomeWelcomeDescription(),
                             null,
-                            Locale.ENGLISH)))));
+                            locale)))));
     blocks.add(
         actions(
             actions ->
@@ -240,13 +244,13 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                                                     messageSourceSlackConfiguration
                                                         .getMessageHomeReadMoreEmoji(),
                                                     null,
-                                                    Locale.ENGLISH)
+                                                    locale)
                                                 + " "
                                                 + messageSource.getMessage(
                                                     messageSourceSlackConfiguration
                                                         .getMessageHomeReadMore(),
                                                     null,
-                                                    Locale.ENGLISH)))
+                                                    locale)))
                                     .actionId(slackConfigurationProperties.getReadMoreActionId())
                                     .url(slackConfigurationProperties.getWelcomeReadMoreUrl())),
                         button(
@@ -257,13 +261,13 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                                                     messageSourceSlackConfiguration
                                                         .getMessageHomeSuggestFeatureEmoji(),
                                                     null,
-                                                    Locale.ENGLISH)
+                                                    locale)
                                                 + " "
                                                 + messageSource.getMessage(
                                                     messageSourceSlackConfiguration
                                                         .getMessageHomeSuggestFeature(),
                                                     null,
-                                                    Locale.ENGLISH)))
+                                                    locale)))
                                     .actionId(
                                         slackConfigurationProperties.getSuggestFeatureActionId())
                                     .url(
@@ -272,7 +276,7 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
     return blocks;
   }
 
-  private List<LayoutBlock> buildCloudSection() {
+  private List<LayoutBlock> buildCloudSection(final Locale locale) {
     var blocks = new ArrayList<LayoutBlock>();
     blocks.add(
         header(
@@ -282,7 +286,7 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                         messageSource.getMessage(
                             messageSourceSlackConfiguration.getMessageHomeCloudTitle(),
                             null,
-                            Locale.ENGLISH)))));
+                            locale)))));
     blocks.add(divider());
     blocks.add(
         section(
@@ -292,7 +296,7 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                             messageSource.getMessage(
                                 messageSourceSlackConfiguration.getMessageHomeCloudDescription(),
                                 null,
-                                Locale.ENGLISH)))
+                                locale)))
                     .accessory(
                         button(
                             b ->
@@ -302,23 +306,25 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                                                 messageSourceSlackConfiguration
                                                     .getMessageHomeCloudButton(),
                                                 null,
-                                                Locale.ENGLISH)))
+                                                locale)))
                                     .actionId("get_cloud")
                                     .url(slackConfigurationProperties.getGetCloudUrl())))));
     return blocks;
   }
 
-  private List<LayoutBlock> buildHomeTabBlocks(final SettingsResponse settings) {
-    var blocks = new ArrayList<>(buildWelcomeBlocks());
+  private List<LayoutBlock> buildHomeTabBlocks(
+      final SettingsResponse settings, final Locale locale) {
+    var blocks = new ArrayList<>(buildWelcomeBlocks(locale));
 
-    blocks.addAll(buildSettingsInputs(settings));
-    blocks.add(buildSaveButtonActions());
-    blocks.addAll(buildCloudSection());
+    blocks.addAll(buildSettingsInputs(settings, locale));
+    blocks.add(buildSaveButtonActions(locale));
+    blocks.addAll(buildCloudSection(locale));
 
     return blocks;
   }
 
-  private void updateHomeTab(final AppHomeOpenedEvent event, final EventContext ctx)
+  private void updateHomeTab(
+      final AppHomeOpenedEvent event, final EventContext ctx, final Locale locale)
       throws IOException, SlackApiException {
     var settings = SettingsResponse.builder().build();
 
@@ -332,7 +338,7 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
       }
     }
 
-    var blocks = buildHomeTabBlocks(settings);
+    var blocks = buildHomeTabBlocks(settings, locale);
     var view = view(v -> v.type("home").blocks(asBlocks(blocks.toArray(new LayoutBlock[0]))));
     var response = ctx.client().viewsPublish(r -> r.userId(event.getUser()).view(view));
 
@@ -341,7 +347,7 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
           messageSource.getMessage(
               messageSourceSlackConfiguration.getMessageHomeErrorRenderView(),
               new Object[] {response.getError()},
-              Locale.ENGLISH);
+              locale);
       log.error(errorMessage);
     }
   }
@@ -349,7 +355,22 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
   @Override
   public Response apply(EventsApiPayload<AppHomeOpenedEvent> payload, EventContext ctx) {
     try {
-      updateHomeTab(payload.getEvent(), ctx);
+      var lang = "en-US";
+      var userInfo =
+          ctx.client()
+              .usersInfo(
+                  UsersInfoRequest.builder()
+                      .user(ctx.getRequestUserId())
+                      .token(ctx.getRequestUserToken())
+                      .includeLocale(true)
+                      .build());
+
+      if (userInfo.isOk() && userInfo.getUser().getLocale() != null)
+        lang = userInfo.getUser().getLocale();
+
+      var locale = localeUtils.toLocale(lang);
+
+      updateHomeTab(payload.getEvent(), ctx, locale);
       return ctx.ack();
     } catch (IOException | SlackApiException e) {
       log.error("Error updating home tab", e);
