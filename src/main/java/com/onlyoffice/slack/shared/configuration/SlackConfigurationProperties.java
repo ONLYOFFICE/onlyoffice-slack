@@ -35,6 +35,7 @@ public class SlackConfigurationProperties {
   private String getCloudActionId = "get_cloud";
   private String shareFeedbackActionId = "share_feedback";
   private String learnMoreActionId = "learn_more";
+  private String installActionId = "install_app";
 
   private String downloadPathPattern = "%s/download/%s";
   private String editorPathPattern = "%s/editor?session=%s&locale=%s";

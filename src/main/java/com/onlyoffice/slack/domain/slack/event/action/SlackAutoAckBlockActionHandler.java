@@ -21,7 +21,8 @@ class SlackAutoAckBlockActionHandler implements SlackBlockActionHandlerRegistrar
         slackConfigurationProperties.getReadMoreActionId(),
         slackConfigurationProperties.getSuggestFeatureActionId(),
         slackConfigurationProperties.getLearnMoreActionId(),
-        slackConfigurationProperties.getShareFeedbackActionId());
+        slackConfigurationProperties.getShareFeedbackActionId(),
+        slackConfigurationProperties.getInstallActionId());
   }
 
   @Override

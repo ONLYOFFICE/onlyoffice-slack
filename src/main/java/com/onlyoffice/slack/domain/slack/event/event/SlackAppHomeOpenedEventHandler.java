@@ -6,6 +6,7 @@ import static com.slack.api.model.block.element.BlockElements.*;
 import static com.slack.api.model.view.Views.view;
 
 import com.onlyoffice.slack.domain.slack.settings.SettingsService;
+import com.onlyoffice.slack.shared.configuration.ServerConfigurationProperties;
 import com.onlyoffice.slack.shared.configuration.SlackConfigurationProperties;
 import com.onlyoffice.slack.shared.configuration.message.MessageSourceSlackConfiguration;
 import com.onlyoffice.slack.shared.exception.domain.DocumentSettingsConfigurationException;
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEvent> {
   private final MessageSourceSlackConfiguration messageSourceSlackConfiguration;
+  private final ServerConfigurationProperties serverConfigurationProperties;
   private final SlackConfigurationProperties slackConfigurationProperties;
 
   private final SettingsService settingsService;
@@ -352,9 +354,56 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
     }
   }
 
+  private List<LayoutBlock> buildInstallationPageBlocks(final Locale locale) {
+    var blocks = new ArrayList<LayoutBlock>();
+    blocks.add(divider());
+    blocks.add(section(s -> s.text(markdownText("*Please install the app*"))));
+    blocks.add(
+        actions(
+            actions ->
+                actions.elements(
+                    asElements(
+                        button(
+                            b ->
+                                b.text(
+                                        plainText(
+                                            messageSource.getMessage(
+                                                messageSourceSlackConfiguration
+                                                    .getMessageInstallButton(),
+                                                null,
+                                                locale)))
+                                    .actionId(slackConfigurationProperties.getInstallActionId())
+                                    .style("primary")
+                                    .url(
+                                        serverConfigurationProperties.getBaseAddress()
+                                            + "/slack/install"))))));
+    blocks.add(divider());
+    return blocks;
+  }
+
+  private void showInstallationPage(
+      final AppHomeOpenedEvent event, final EventContext ctx, final Locale locale)
+      throws IOException, SlackApiException {
+
+    var blocks = buildInstallationPageBlocks(locale);
+    var view = view(v -> v.type("home").blocks(asBlocks(blocks.toArray(new LayoutBlock[0]))));
+    var response = ctx.client().viewsPublish(r -> r.userId(event.getUser()).view(view));
+
+    if (!response.isOk()) {
+      var errorMessage = messageSource.getMessage("", new Object[] {response.getError()}, locale);
+      log.error(errorMessage);
+    }
+  }
+
   @Override
   public Response apply(EventsApiPayload<AppHomeOpenedEvent> payload, EventContext ctx) {
     try {
+      if (ctx.getRequestUserToken() == null || ctx.getRequestUserToken().isBlank()) {
+        var locale = localeUtils.toLocale("en-US");
+        showInstallationPage(payload.getEvent(), ctx, locale);
+        return ctx.ack();
+      }
+
       var lang = "en-US";
       var userInfo =
           ctx.client()
