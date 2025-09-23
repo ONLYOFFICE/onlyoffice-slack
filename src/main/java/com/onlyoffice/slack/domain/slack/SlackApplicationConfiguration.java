@@ -2,6 +2,7 @@ package com.onlyoffice.slack.domain.slack;
 
 import com.onlyoffice.slack.domain.slack.event.registry.SlackBlockActionRegistry;
 import com.onlyoffice.slack.domain.slack.event.registry.SlackSlashCommandHandlerRegistry;
+import com.onlyoffice.slack.domain.slack.event.registry.SlackViewSubmissionRegistry;
 import com.onlyoffice.slack.shared.configuration.SlackConfigurationProperties;
 import com.slack.api.bolt.App;
 import com.slack.api.bolt.AppConfig;
@@ -27,6 +28,7 @@ public class SlackApplicationConfiguration {
   private final SlackConfigurationProperties properties;
 
   private final SlackBlockActionRegistry blockActionRegistry;
+  private final SlackViewSubmissionRegistry viewSubmissionRegistry;
   private final SlackSlashCommandHandlerRegistry commandHandlerRegistry;
 
   private final BoltEventHandler<AppHomeOpenedEvent> appHomeOpenedEventBoltEventHandler;
@@ -66,6 +68,7 @@ public class SlackApplicationConfiguration {
     app.messageShortcut(properties.getFileManagerShortcutId(), slackMessageShortcutHandler);
     blockActionRegistry.getRegistry().forEach(app::blockAction);
     commandHandlerRegistry.getRegistry().forEach(app::command);
+    viewSubmissionRegistry.getRegistry().forEach(app::viewSubmission);
 
     return app;
   }

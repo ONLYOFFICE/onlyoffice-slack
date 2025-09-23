@@ -1,6 +1,7 @@
 package com.onlyoffice.slack.domain.slack.event.registry;
 
 import com.slack.api.bolt.handler.builtin.BlockActionHandler;
+import java.util.Map;
 import java.util.Optional;
 
 public interface SlackBlockActionRegistry {
@@ -8,5 +9,5 @@ public interface SlackBlockActionRegistry {
 
   Optional<BlockActionHandler> find(String callbackId);
 
-  java.util.Map<String, BlockActionHandler> getRegistry();
+  Map<String, BlockActionHandler> getRegistry();
 }

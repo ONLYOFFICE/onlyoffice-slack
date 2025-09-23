@@ -27,6 +27,7 @@ public class SlackConfigurationProperties {
   @NotBlank private String pathCompletion;
   @NotBlank private String pathCancellation;
 
+  private String createDocumentModalActionId = "create_document_modal";
   private String fileManagerShortcutId = "open_file_manager";
   private String openFileActionId = "open_file";
   private String submitSettingsActionId = "submit_settings";

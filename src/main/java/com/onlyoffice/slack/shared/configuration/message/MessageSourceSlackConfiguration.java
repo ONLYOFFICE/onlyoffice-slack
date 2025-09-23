@@ -105,6 +105,16 @@ public class MessageSourceSlackConfiguration {
   private String messageManagerModalOpenButton = "manager.modal.button.open";
   private String messageManagerModalCloseButton = "manager.modal.button.close";
 
+  private String messageCreateDocumentTitle = "create.document.modal.title";
+  private String messageCreateDocumentSubmit = "create.document.modal.submit";
+  private String messageCreateDocumentLabel = "create.document.modal.title.label";
+  private String messageCreateDocumentPlaceholder = "create.document.modal.title.placeholder";
+  private String messageCreateDocumentTypeLabel = "create.document.modal.type.label";
+  private String messageCreateDocumentTypePlaceholder = "create.document.modal.type.placeholder";
+  private String messageCreateDocumentTypeDocument = "create.document.modal.type.document";
+  private String messageCreateDocumentTypeSpreadsheet = "create.document.modal.type.spreadsheet";
+  private String messageCreateDocumentTypePresentation = "create.document.modal.type.presentation";
+
   private String messageSettingsSuccess = "settings.success.message";
   private String messageSettingsError = "settings.error.message";
 }
