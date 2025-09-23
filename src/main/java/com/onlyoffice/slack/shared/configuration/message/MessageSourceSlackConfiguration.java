@@ -104,4 +104,7 @@ public class MessageSourceSlackConfiguration {
   private String messageManagerModalNoFilesFound = "manager.modal.noFiles";
   private String messageManagerModalOpenButton = "manager.modal.button.open";
   private String messageManagerModalCloseButton = "manager.modal.button.close";
+
+  private String messageSettingsSuccess = "settings.success.message";
+  private String messageSettingsError = "settings.error.message";
 }
