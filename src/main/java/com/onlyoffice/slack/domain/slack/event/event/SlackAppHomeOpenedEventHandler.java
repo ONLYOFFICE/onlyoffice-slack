@@ -354,6 +354,27 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
     }
   }
 
+  private List<LayoutBlock> buildWelcomeOnlyBlocks(final Locale locale) {
+    return buildWelcomeBlocks(locale);
+  }
+
+  private void updateHomeTabWelcomeOnly(
+      final AppHomeOpenedEvent event, final EventContext ctx, final Locale locale)
+      throws IOException, SlackApiException {
+    var blocks = buildWelcomeOnlyBlocks(locale);
+    var view = view(v -> v.type("home").blocks(asBlocks(blocks.toArray(new LayoutBlock[0]))));
+    var response = ctx.client().viewsPublish(r -> r.userId(event.getUser()).view(view));
+
+    if (!response.isOk()) {
+      var errorMessage =
+          messageSource.getMessage(
+              messageSourceSlackConfiguration.getMessageHomeErrorRenderView(),
+              new Object[] {response.getError()},
+              locale);
+      log.error(errorMessage);
+    }
+  }
+
   private List<LayoutBlock> buildInstallationPageBlocks(final Locale locale) {
     var blocks = new ArrayList<LayoutBlock>();
     blocks.add(divider());
@@ -416,6 +437,12 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
 
       if (userInfo.isOk() && userInfo.getUser().getLocale() != null)
         lang = userInfo.getUser().getLocale();
+
+      if (!userInfo.isOk() || !userInfo.getUser().isAdmin()) {
+        lang = userInfo.isOk() ? userInfo.getUser().getLocale() : "en-US";
+        updateHomeTabWelcomeOnly(payload.getEvent(), ctx, localeUtils.toLocale(lang));
+        return ctx.ack();
+      }
 
       var locale = localeUtils.toLocale(lang);
 
