@@ -377,8 +377,26 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
 
   private List<LayoutBlock> buildInstallationPageBlocks(final Locale locale) {
     var blocks = new ArrayList<LayoutBlock>();
+
+    blocks.add(
+        header(
+            h ->
+                h.text(
+                    plainText(
+                        messageSource.getMessage(
+                            messageSourceSlackConfiguration.getMessageHomeWelcomeTitle(),
+                            null,
+                            locale)))));
     blocks.add(divider());
-    blocks.add(section(s -> s.text(markdownText("*Please install the app*"))));
+    blocks.add(
+        section(
+            s ->
+                s.text(
+                    markdownText(
+                        messageSource.getMessage(
+                            messageSourceSlackConfiguration.getMessageInstallSubtitle(),
+                            null,
+                            locale)))));
     blocks.add(
         actions(
             actions ->
@@ -398,7 +416,7 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                                     .url(
                                         serverConfigurationProperties.getBaseAddress()
                                             + "/slack/install"))))));
-    blocks.add(divider());
+
     return blocks;
   }
 
