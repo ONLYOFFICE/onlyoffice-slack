@@ -89,13 +89,19 @@ class SlackHelpSlashCommandHandler implements SlackSlashCommandHandlerRegistrar 
                                             .text(
                                                 plainText(
                                                     messageSource.getMessage(
-                                                        messageConfig
-                                                            .getMessageHelpLearnMoreButton(),
-                                                        null,
-                                                        locale)))
-                                            .style("primary")
+                                                            messageConfig
+                                                                .getMessageHelpLearnMoreButtonEmoji(),
+                                                            null,
+                                                            locale)
+                                                        + " "
+                                                        + messageSource.getMessage(
+                                                            messageConfig
+                                                                .getMessageHelpLearnMoreButton(),
+                                                            null,
+                                                            locale)))
                                             .actionId(slackProperties.getLearnMoreActionId())
                                             .url(slackProperties.getWelcomeReadMoreUrl())))),
+                divider(),
                 section(
                     section ->
                         section

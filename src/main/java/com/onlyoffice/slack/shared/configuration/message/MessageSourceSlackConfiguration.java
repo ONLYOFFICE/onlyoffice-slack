@@ -54,6 +54,7 @@ public class MessageSourceSlackConfiguration {
   private String messageHelpInstructions = "help.instructions";
   private String messageHelpLearnMore = "help.learnMore";
   private String messageHelpLearnMoreButton = "help.learnMoreButton";
+  private String messageHelpLearnMoreButtonEmoji = "help.learnMoreButton.emoji";
   private String messageHelpFeedback = "help.feedback";
   private String messageHelpFeedbackButton = "help.feedbackButton";
 
