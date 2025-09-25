@@ -71,6 +71,7 @@ public class MessageSourceSlackConfiguration {
   private String messageHomeErrorRenderView = "home.error.renderView";
   private String messageHomeWelcomeTitle = "home.welcome.title";
   private String messageHomeWelcomeDescription = "home.welcome.description";
+  private String messageHomeWelcomeDescriptionNonAdmin = "home.welcome.description.nonadmin";
   private String messageHomeReadMore = "home.readMore";
   private String messageHomeSuggestFeature = "home.suggestFeature";
   private String messageHomeReadMoreEmoji = "home.readMore.emoji";

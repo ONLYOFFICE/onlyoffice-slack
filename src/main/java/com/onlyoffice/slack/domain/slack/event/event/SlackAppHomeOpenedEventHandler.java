@@ -212,8 +212,17 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                                 .style("primary")))));
   }
 
-  private List<LayoutBlock> buildWelcomeBlocks(final Locale locale) {
+  private List<LayoutBlock> buildWelcomeBlocks(final Locale locale, final boolean isAdmin) {
     var blocks = new ArrayList<LayoutBlock>();
+    var message =
+        isAdmin
+            ? messageSource.getMessage(
+                messageSourceSlackConfiguration.getMessageHomeWelcomeDescription(), null, locale)
+            : messageSource.getMessage(
+                messageSourceSlackConfiguration.getMessageHomeWelcomeDescriptionNonAdmin(),
+                null,
+                locale);
+
     blocks.add(
         header(
             h ->
@@ -224,15 +233,7 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                             null,
                             locale)))));
     blocks.add(divider());
-    blocks.add(
-        section(
-            s ->
-                s.text(
-                    markdownText(
-                        messageSource.getMessage(
-                            messageSourceSlackConfiguration.getMessageHomeWelcomeDescription(),
-                            null,
-                            locale)))));
+    blocks.add(section(s -> s.text(markdownText(message))));
     blocks.add(
         actions(
             actions ->
@@ -316,7 +317,7 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
 
   private List<LayoutBlock> buildHomeTabBlocks(
       final SettingsResponse settings, final Locale locale) {
-    var blocks = new ArrayList<>(buildWelcomeBlocks(locale));
+    var blocks = new ArrayList<>(buildWelcomeBlocks(locale, true));
 
     blocks.addAll(buildSettingsInputs(settings, locale));
     blocks.add(buildSaveButtonActions(locale));
@@ -355,7 +356,7 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
   }
 
   private List<LayoutBlock> buildWelcomeOnlyBlocks(final Locale locale) {
-    return buildWelcomeBlocks(locale);
+    return buildWelcomeBlocks(locale, false);
   }
 
   private void updateHomeTabWelcomeOnly(
