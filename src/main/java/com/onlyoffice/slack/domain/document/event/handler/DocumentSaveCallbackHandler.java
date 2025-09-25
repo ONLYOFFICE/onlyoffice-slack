@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 class DocumentSaveCallbackHandler implements DocumentCallbackRegistrar {
   private static final int MAX_FILE_SIZE = 25 * 1024 * 1024;
+  private static final String COMMENT_TEMPLATE = "File %s has been edited";
 
   private final DocumentFileKeyExtractor documentFileKeyExtractor;
   private final RotatingInstallationService installationService;
@@ -126,6 +127,7 @@ class DocumentSaveCallbackHandler implements DocumentCallbackRegistrar {
     var requestBuilder =
         FilesUploadV2Request.builder()
             .token(userToken)
+            .initialComment(COMMENT_TEMPLATE.formatted(fileName))
             .filename(fileName)
             .title(fileName)
             .fileData(fileContent);
