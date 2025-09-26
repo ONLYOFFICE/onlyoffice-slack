@@ -118,5 +118,19 @@ public class MessageSourceSlackConfiguration {
   private String messageCreateDocumentTypePresentation = "create.document.modal.type.presentation";
 
   private String messageSettingsSuccess = "settings.success.message";
+  private String messageSettingsSuccessDetails = "settings.success.details";
+  private String messageSettingsSuccessNextSteps = "settings.success.nextSteps";
+  private String messageSettingsSuccessNextStepsEdit = "settings.success.nextSteps.edit";
+  private String messageSettingsSuccessNextStepsCollaborate =
+      "settings.success.nextSteps.collaborate";
+  private String messageSettingsSuccessNextStepsManage = "settings.success.nextSteps.manage";
+
   private String messageSettingsError = "settings.error.message";
+  private String messageSettingsErrorDetails = "settings.error.details";
+  private String messageSettingsErrorTroubleshooting = "settings.error.troubleshooting";
+  private String messageSettingsErrorTroubleshootingCheckConnection =
+      "settings.error.troubleshooting.checkConnection";
+  private String messageSettingsErrorTroubleshootingVerifyCredentials =
+      "settings.error.troubleshooting.verifyCredentials";
+  private String messageSettingsErrorTroubleshootingRetry = "settings.error.troubleshooting.retry";
 }

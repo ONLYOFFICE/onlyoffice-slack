@@ -1,5 +1,8 @@
 package com.onlyoffice.slack.domain.slack.event.action;
 
+import static com.slack.api.model.block.Blocks.*;
+import static com.slack.api.model.block.composition.BlockCompositions.*;
+
 import com.onlyoffice.slack.domain.document.editor.core.DocumentSettingsValidationService;
 import com.onlyoffice.slack.domain.slack.event.registry.SlackBlockActionHandlerRegistrar;
 import com.onlyoffice.slack.domain.slack.settings.SettingsService;
@@ -87,12 +90,50 @@ class SlackSubmitSettingsBlockActionHandler implements SlackBlockActionHandlerRe
     var message =
         messageSource.getMessage(
             messageSourceSlackConfiguration.getMessageSettingsSuccess(), null, locale);
+    var detailsMessage =
+        messageSource.getMessage(
+            messageSourceSlackConfiguration.getMessageSettingsSuccessDetails(), null, locale);
+    var nextStepsTitle =
+        messageSource.getMessage(
+            messageSourceSlackConfiguration.getMessageSettingsSuccessNextSteps(), null, locale);
+    var editMessage =
+        messageSource.getMessage(
+            messageSourceSlackConfiguration.getMessageSettingsSuccessNextStepsEdit(), null, locale);
+    var collaborateMessage =
+        messageSource.getMessage(
+            messageSourceSlackConfiguration.getMessageSettingsSuccessNextStepsCollaborate(),
+            null,
+            locale);
+    var manageMessage =
+        messageSource.getMessage(
+            messageSourceSlackConfiguration.getMessageSettingsSuccessNextStepsManage(),
+            null,
+            locale);
+
+    var blocks =
+        List.of(
+            section(
+                section ->
+                    section.text(
+                        markdownText(
+                            String.format(
+                                ":white_check_mark: *%s*\n\n:sparkles: %s",
+                                message, detailsMessage)))),
+            divider(),
+            section(
+                section ->
+                    section.text(
+                        markdownText(
+                            String.format(
+                                ":rocket: *%s*\n• %s\n• %s\n• %s",
+                                nextStepsTitle, editMessage, collaborateMessage, manageMessage)))));
+
     ctx.client()
         .chatPostEphemeral(
             ChatPostEphemeralRequest.builder()
                 .channel(req.getPayload().getUser().getId())
                 .user(req.getPayload().getUser().getId())
-                .text(message)
+                .blocks(blocks)
                 .build());
   }
 
@@ -102,12 +143,54 @@ class SlackSubmitSettingsBlockActionHandler implements SlackBlockActionHandlerRe
     var message =
         messageSource.getMessage(
             messageSourceSlackConfiguration.getMessageSettingsError(), null, locale);
+    var detailsMessage =
+        messageSource.getMessage(
+            messageSourceSlackConfiguration.getMessageSettingsErrorDetails(), null, locale);
+    var troubleshootingTitle =
+        messageSource.getMessage(
+            messageSourceSlackConfiguration.getMessageSettingsErrorTroubleshooting(), null, locale);
+    var checkConnectionMessage =
+        messageSource.getMessage(
+            messageSourceSlackConfiguration.getMessageSettingsErrorTroubleshootingCheckConnection(),
+            null,
+            locale);
+    var verifyCredentialsMessage =
+        messageSource.getMessage(
+            messageSourceSlackConfiguration
+                .getMessageSettingsErrorTroubleshootingVerifyCredentials(),
+            null,
+            locale);
+    var retryMessage =
+        messageSource.getMessage(
+            messageSourceSlackConfiguration.getMessageSettingsErrorTroubleshootingRetry(),
+            null,
+            locale);
+
+    var blocks =
+        List.of(
+            section(
+                section ->
+                    section.text(
+                        markdownText(
+                            String.format(":x: *%s*\n\n:warning: %s", message, detailsMessage)))),
+            divider(),
+            section(
+                section ->
+                    section.text(
+                        markdownText(
+                            String.format(
+                                ":mag: *%s*\n• %s\n• %s\n• %s",
+                                troubleshootingTitle,
+                                checkConnectionMessage,
+                                verifyCredentialsMessage,
+                                retryMessage)))));
+
     ctx.client()
         .chatPostEphemeral(
             ChatPostEphemeralRequest.builder()
                 .channel(req.getPayload().getUser().getId())
                 .user(req.getPayload().getUser().getId())
-                .text(message)
+                .blocks(blocks)
                 .build());
   }
 
