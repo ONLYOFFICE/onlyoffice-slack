@@ -8,7 +8,7 @@ on:
         type: string
         required: true
       repo:
-        description: 'Choose registry: test (custom) or prod (Docker Hub)'
+        description: 'Choose registry'
         default: test
         type: choice
         options: [test, prod]
