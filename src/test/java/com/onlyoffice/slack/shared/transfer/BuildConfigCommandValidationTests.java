@@ -51,6 +51,7 @@ class BuildConfigCommandValidationTests {
             .file(mock(File.class))
             .mode(mock(Mode.class))
             .type(mock(Type.class))
+            .locale("en")
             .build();
     var violations = validator.validate(cmd);
     assertTrue(violations.isEmpty());

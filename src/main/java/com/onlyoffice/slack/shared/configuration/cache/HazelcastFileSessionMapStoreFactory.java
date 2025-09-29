@@ -13,16 +13,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class HazelcastFileSessionMapStoreFactory
     implements MapStoreFactory<String, DocumentSessionKey>, ApplicationContextAware {
-  private ApplicationContext applicationContext;
+  private static ApplicationContext staticApplicationContext;
 
   @Override
   public void setApplicationContext(final @NotNull ApplicationContext context) {
-    this.applicationContext = context;
+    HazelcastFileSessionMapStoreFactory.staticApplicationContext = context;
   }
 
   @Override
   public MapStore<String, DocumentSessionKey> newMapStore(
       final String mapName, final Properties properties) {
-    return applicationContext.getBean(DocumentFileSessionService.class);
+    if (staticApplicationContext == null)
+      throw new IllegalStateException(
+          "ApplicationContext not initialized in HazelcastFileSessionMapStoreFactory");
+    return staticApplicationContext.getBean(DocumentFileSessionService.class);
   }
 }
