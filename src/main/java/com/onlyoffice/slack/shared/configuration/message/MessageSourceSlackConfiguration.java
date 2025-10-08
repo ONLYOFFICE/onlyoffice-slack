@@ -111,6 +111,7 @@ public class MessageSourceSlackConfiguration {
   private String messageCreateDocumentSubmit = "create.document.modal.submit";
   private String messageCreateDocumentLabel = "create.document.modal.title.label";
   private String messageCreateDocumentPlaceholder = "create.document.modal.title.placeholder";
+  private String messageCreateDocumentName = "create.document.modal.title.name";
   private String messageCreateDocumentTypeLabel = "create.document.modal.type.label";
   private String messageCreateDocumentTypePlaceholder = "create.document.modal.type.placeholder";
   private String messageCreateDocumentTypeDocument = "create.document.modal.type.document";

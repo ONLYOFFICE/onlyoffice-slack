@@ -59,7 +59,13 @@ public class SlackCreateDocumentCommandHandler implements SlackSlashCommandHandl
                                                 messageSourceSlackConfiguration
                                                     .getMessageCreateDocumentPlaceholder(),
                                                 null,
-                                                locale)))))));
+                                                locale)))
+                                    .initialValue(
+                                        messageSource.getMessage(
+                                            messageSourceSlackConfiguration
+                                                .getMessageCreateDocumentName(),
+                                            null,
+                                            locale))))));
     blocks.add(
         input(
             input ->
