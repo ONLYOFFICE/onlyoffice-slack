@@ -6,7 +6,7 @@
     --button-hover: #005f47;
     --button-text: #fff;
     --body-bg: #f5f5f5;
-    --container-bg: #fff;
+    --container-bg: inherit;
     --shadow: rgba(0, 0, 0, 0.1);
     --feature-icon-bg: #e8f5e8;
     --feature-icon-color: #007A5A;
