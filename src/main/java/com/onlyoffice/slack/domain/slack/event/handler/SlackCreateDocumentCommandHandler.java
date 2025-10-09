@@ -168,7 +168,7 @@ public class SlackCreateDocumentCommandHandler implements SlackSlashCommandHandl
 
   @Override
   public String getSlash() {
-    return "/document";
+    return "/file";
   }
 
   @Override
