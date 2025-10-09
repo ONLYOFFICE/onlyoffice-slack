@@ -10,6 +10,8 @@
     --shadow: rgba(0, 0, 0, 0.1);
     --error-bg: inherit;
     --error-text: #222;
+    --link-color: #007A5A;
+    --link-hover: #00a873;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -25,6 +27,8 @@
         --shadow: rgba(255, 255, 255, 0.1);
         --error-bg: #1a1d21;
         --error-text: #fff;
+        --link-color: #4db8a0;
+        --link-hover: #5de0b6;
     }
 }
 
@@ -147,6 +151,23 @@
 
 .loading-container__error-message {
     color: var(--error-text);
+}
+
+.loading-container__link {
+    color: var(--link-color);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    transition: color 0.2s, text-decoration-color 0.2s;
+}
+
+.loading-container__link:visited {
+    color: var(--link-color);
+}
+
+.loading-container__link:hover {
+    color: var(--link-hover);
+    text-decoration-color: var(--link-hover);
 }
 
 .loading__logo--light {
