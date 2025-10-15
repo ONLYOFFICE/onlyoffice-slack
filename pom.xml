@@ -15,7 +15,7 @@
 	<version>1.0.0</version>
 
 	<name>slack</name>
-	<description>ONLYOFFICE app for Slack</description>
+	<description>This app seamlessly integrates ONLYOFFICE Docs into your Slack workspace, allowing you to create, view, and edit documents, spreadsheets, and presentations within your channels and direct messages.</description>
 	<url>https://github.com/ONLYOFFICE/onlyoffice-slack</url>
 
 	<inceptionYear>2025</inceptionYear>
