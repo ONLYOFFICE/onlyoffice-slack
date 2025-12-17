@@ -26,6 +26,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.MediaType;
@@ -70,21 +72,40 @@ class DocumentSettingsValidationServiceImpl implements DocumentSettingsValidatio
     var token = documentJwtManagerService.createToken(command, secret);
     var commandToken = DocumentServerTokenCommand.builder().token(token).build();
 
-    var jsonBody = objectMapper.writeValueAsString(commandToken);
+    executeVersionValidationRequest(address, header, token, commandToken);
+  }
+
+  private void validateDocumentServerVersionHeader(
+      final URL address, final String header, final String secret) throws IOException {
+    var command = DocumentServerCommand.builder().c("version").build();
+    var token = documentJwtManagerService.createToken(command, secret);
+
+    executeVersionValidationRequest(address, header, "Bearer %s".formatted(token), command);
+  }
+
+  private void executeVersionValidationRequest(
+      final URL address,
+      final String headerName,
+      final String headerValue,
+      final Object requestBody)
+      throws IOException {
+
+    var jsonBody = objectMapper.writeValueAsString(requestBody);
     var request =
         new Request.Builder()
             .url("%s/command?shardkey=%s".formatted(address, UUID.randomUUID()))
-            .header(header, token)
+            .header(headerName, headerValue)
             .post(RequestBody.create(jsonBody, MediaType.parse("application/json")))
             .build();
 
-    try (var okResponse = httpClientPoolService.getHttpClient().newCall(request).execute()) {
-      if (!okResponse.isSuccessful() || okResponse.body() == null)
+    try (var response = httpClientPoolService.getHttpClient().newCall(request).execute()) {
+      if (!response.isSuccessful() || response.body() == null)
         throw new IOException("Could not validate document server version");
 
-      var response = objectMapper.readValue(okResponse.body().bytes(), DocumentServerVersion.class);
-
-      if (response.getError() != 0) throw new IOException("Could not receive a non-error response");
+      var versionResponse =
+          objectMapper.readValue(response.body().bytes(), DocumentServerVersion.class);
+      if (versionResponse.getError() != 0)
+        throw new IOException("Could not receive a non-error response");
     }
   }
 
@@ -104,11 +125,52 @@ class DocumentSettingsValidationServiceImpl implements DocumentSettingsValidatio
       var url = validateConnectionAddress(request.getAddress());
       log.info("Connection address validated");
 
-      validateDocumentServerHealth(url);
-      log.info("Document server health validated");
+      var healthCheckFuture =
+          CompletableFuture.runAsync(
+              () -> {
+                try {
+                  validateDocumentServerHealth(url);
+                  log.info("Document server health validated");
+                } catch (IOException e) {
+                  throw new RuntimeException("Health validation failed", e);
+                }
+              });
 
-      validateDocumentServerVersion(url, request.getHeader(), request.getSecret());
-      log.info("Document server version validated");
+      var versionCheckFuture =
+          CompletableFuture.runAsync(
+              () -> {
+                try {
+                  validateDocumentServerVersion(url, request.getHeader(), request.getSecret());
+                  log.info("Document server version validated");
+                } catch (IOException e) {
+                  throw new RuntimeException("Version validation failed", e);
+                }
+              });
+
+      var versionHeaderCheckFuture =
+          CompletableFuture.runAsync(
+              () -> {
+                try {
+                  validateDocumentServerVersionHeader(
+                      url, request.getHeader(), request.getSecret());
+                  log.info("Document server version header validated");
+                } catch (IOException e) {
+                  throw new RuntimeException("Version header validation failed", e);
+                }
+              });
+
+      try {
+        CompletableFuture.allOf(healthCheckFuture, versionCheckFuture, versionHeaderCheckFuture)
+            .get();
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        throw new IOException("Validation interrupted", e);
+      } catch (ExecutionException e) {
+        var cause = e.getCause();
+        if (cause instanceof RuntimeException && cause.getCause() instanceof IOException)
+          throw (IOException) cause.getCause();
+        throw new IOException("Validation failed", cause);
+      }
 
       log.info("Document server connection validation completed successfully");
     } finally {
