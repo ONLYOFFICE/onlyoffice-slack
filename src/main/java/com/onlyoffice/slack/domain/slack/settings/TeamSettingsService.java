@@ -83,11 +83,15 @@ class TeamSettingsService implements SettingsService {
     if (maybeSettings.isEmpty()) return SettingsResponse.builder().build();
     var settings = maybeSettings.get();
 
-    if (!settings.getDemoEnabled()
-        && (settings.getAddress() == null
-            || settings.getAddress().trim().isEmpty()
-            || settings.getSecret() == null
-            || settings.getSecret().trim().isEmpty())) {
+    var hasValidCredentials =
+        settings.getAddress() != null
+            && !settings.getAddress().trim().isEmpty()
+            && settings.getHeader() != null
+            && !settings.getHeader().trim().isEmpty()
+            && settings.getSecret() != null
+            && !settings.getSecret().trim().isEmpty();
+
+    if (!settings.getDemoEnabled() && !hasValidCredentials) {
       throw new DocumentSettingsConfigurationException(
           DocumentSettingsConfigurationException.SettingsErrorType.INCOMPLETE_CONFIGURATION,
           messageSource.getMessage(
@@ -101,6 +105,7 @@ class TeamSettingsService implements SettingsService {
     }
 
     if (settings.getDemoEnabled()
+        && !hasValidCredentials
         && settings
             .getDemoStartedDate()
             .plusDays(configurationProperties.getDemo().getDurationDays())

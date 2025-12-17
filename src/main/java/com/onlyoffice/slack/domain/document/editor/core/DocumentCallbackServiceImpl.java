@@ -68,8 +68,8 @@ class DocumentCallbackServiceImpl implements DocumentCallbackService {
         throw new DocumentCallbackException(
             "Could not find settings for team %s".formatted(teamId));
 
-      if (settings.isDemoEnabled()) {
-        log.info("Demo mode enabled for current team. Using demo server settings");
+      if (settings.noValidCredentials()) {
+        log.info("No valid credentials found. Using demo server settings");
         settings.setAddress(serverConfigurationProperties.getDemo().getAddress());
         settings.setHeader(serverConfigurationProperties.getDemo().getHeader());
         settings.setSecret(serverConfigurationProperties.getDemo().getSecret());

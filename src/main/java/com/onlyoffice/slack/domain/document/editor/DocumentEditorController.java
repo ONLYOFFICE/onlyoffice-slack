@@ -111,7 +111,7 @@ class DocumentEditorController {
 
   private SettingsResponse getEffectiveSettings(final String teamId) {
     var settings = settingsService.findSettings(teamId);
-    if (settings.isDemoEnabled()) applyDemoSettings(settings);
+    if (settings.noValidCredentials()) applyDemoSettings(settings);
 
     return settings;
   }

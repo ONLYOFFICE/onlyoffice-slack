@@ -29,4 +29,13 @@ public class SettingsResponse {
   private String secret;
   private boolean demoEnabled;
   private LocalDateTime demoStartedDate;
+
+  public boolean noValidCredentials() {
+    return address == null
+        || address.trim().isEmpty()
+        || header == null
+        || header.trim().isEmpty()
+        || secret == null
+        || secret.trim().isEmpty();
+  }
 }
