@@ -25,10 +25,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -95,10 +97,25 @@ class DocumentFileStreamingServiceImpl implements DocumentFileStreamingService {
       throw new FileContentLengthException("File size is less or equal to 0 bytes");
   }
 
+  private String encodeContentDisposition(String filename) {
+    try {
+      var encodedFilename =
+          URLEncoder.encode(filename, StandardCharsets.UTF_8)
+              .replace("+", "%20"); // Spaces should be %20, not +
+      var asciiFilename = filename.replaceAll("[^\\x00-\\x7F]", "_");
+      return String.format(
+          "attachment; filename=\"%s\"; filename*=UTF-8''%s", asciiFilename, encodedFilename);
+    } catch (Exception e) {
+      log.warn("Failed to encode filename: {}, using ASCII fallback", filename, e);
+      var asciiFilename = filename.replaceAll("[^\\x00-\\x7F]", "_");
+      return String.format("attachment; filename=\"%s\"", asciiFilename);
+    }
+  }
+
   private void setResponseHeaders(final HttpServletResponse response, final File file) {
     response.setContentType(file.getMimetype());
     response.setContentLength(file.getSize());
-    response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+    response.setHeader("Content-Disposition", encodeContentDisposition(file.getName()));
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     response.setHeader("Pragma", "no-cache");
     response.setHeader("Expires", "0");

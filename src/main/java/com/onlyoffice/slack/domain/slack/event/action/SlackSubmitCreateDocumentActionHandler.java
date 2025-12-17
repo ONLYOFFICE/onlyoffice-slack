@@ -38,7 +38,6 @@ public class SlackSubmitCreateDocumentActionHandler implements SlackViewSubmissi
   private static final List<String> SUPPORTED_TEMPLATE_TYPES = List.of("docx", "xlsx", "pptx");
   private static final String TEMPLATE_PATH_FORMAT = "document-templates/default/new.%s";
   private static final int MAX_FILENAME_LENGTH = 200;
-  private static final String FILENAME_SANITIZE_PATTERN = "[^a-zA-Z0-9._-]";
 
   private final SlackConfigurationProperties slackConfigurationProperties;
   private final DocumentServerFormatsConfiguration documentServerFormatsConfiguration;
@@ -168,9 +167,19 @@ public class SlackSubmitCreateDocumentActionHandler implements SlackViewSubmissi
   }
 
   private String createSanitizedFileName(String title, String type) {
-    var sanitized = title.replaceAll(FILENAME_SANITIZE_PATTERN, "_");
-    if (sanitized.length() > MAX_FILENAME_LENGTH)
-      sanitized = sanitized.substring(0, MAX_FILENAME_LENGTH);
+    var sanitized =
+        title
+            .replaceAll("[/\\\\:*?\"<>|\\p{Cntrl}]", "_")
+            .replaceAll("^\\.*", "")
+            .replaceAll("\\.*$", "")
+            .replaceAll("\\s+", " ")
+            .trim();
+
+    if (sanitized.isEmpty()) sanitized = "New File";
+
+    int maxBaseLength = MAX_FILENAME_LENGTH - type.length() - 1;
+    if (sanitized.length() > maxBaseLength) sanitized = sanitized.substring(0, maxBaseLength);
+
     return String.format("%s.%s", sanitized, type);
   }
 
