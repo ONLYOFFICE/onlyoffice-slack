@@ -32,6 +32,20 @@ class DocumentConfigManagerServiceImpl implements DocumentConfigManagerService {
   private final DocumentJwtManagerService documentJwtManagerService;
   private final DocumentFileManagerService documentManagerService;
 
+  private String getUserName(com.slack.api.model.User user) {
+    var profile = user.getProfile();
+    if (profile != null) {
+      if (profile.getDisplayName() != null && !profile.getDisplayName().isBlank())
+        return profile.getDisplayName();
+      if (profile.getRealName() != null && !profile.getRealName().isBlank())
+        return profile.getRealName();
+    }
+
+    if (user.getRealName() != null && !user.getRealName().isBlank()) return user.getRealName();
+
+    return user.getName();
+  }
+
   @Override
   public Config createConfig(@Valid final BuildConfigCommand command) {
     var user = command.getUser();
@@ -56,7 +70,7 @@ class DocumentConfigManagerServiceImpl implements DocumentConfigManagerService {
                     .user(
                         User.builder()
                             .id(user.getId())
-                            .name(user.getName())
+                            .name(getUserName(user))
                             .image(user.getProfile().getImage32())
                             .build())
                     .callbackUrl(
