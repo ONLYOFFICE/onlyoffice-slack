@@ -23,8 +23,8 @@ hazelcast:
     states:
       in-memory-format: BINARY
       backup-count: 1
-      time-to-live-seconds: 30
-      max-idle-seconds: 30
+      time-to-live-seconds: 60
+      max-idle-seconds: 60
       eviction:
         eviction-policy: LRU
         max-size-policy: USED_HEAP_SIZE
