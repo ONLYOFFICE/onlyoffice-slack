@@ -92,6 +92,17 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                                     .initialValue(
                                         settings == null ? "" : settings.getAddress())))));
     inputs.add(
+        context(
+            ctx ->
+                ctx.elements(
+                    List.of(
+                        markdownText(
+                            messageSource.getMessage(
+                                messageSourceSlackConfiguration
+                                    .getMessageHomeInputHttpsAddressHelp(),
+                                null,
+                                locale))))));
+    inputs.add(
         input(
             i ->
                 i.blockId("secret")
