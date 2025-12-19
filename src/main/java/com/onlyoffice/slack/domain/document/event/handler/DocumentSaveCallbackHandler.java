@@ -190,6 +190,31 @@ class DocumentSaveCallbackHandler implements DocumentCallbackRegistrar {
     }
   }
 
+  private String extractActionUserId(final Callback callback, final String fallbackUserId) {
+    var actions = callback.getActions();
+    if (actions == null || actions.isEmpty()) {
+      log.info(
+          "No actions in callback, using fallback userId from document key: {}", fallbackUserId);
+      return fallbackUserId;
+    }
+
+    var lastAction = actions.getLast();
+    var lastActionUserId = lastAction.getUserid();
+
+    if (lastActionUserId != null && !lastActionUserId.isBlank()) {
+      if (!lastActionUserId.equals(fallbackUserId))
+        log.info(
+            "Using actual editor userId from callback actions: {} (original opener was: {})",
+            lastActionUserId,
+            fallbackUserId);
+
+      return lastActionUserId;
+    }
+
+    log.info("No valid userId in actions, using fallback: {}", fallbackUserId);
+    return fallbackUserId;
+  }
+
   @Override
   public Status getStatus() {
     return Status.SAVE;
@@ -206,22 +231,24 @@ class DocumentSaveCallbackHandler implements DocumentCallbackRegistrar {
             "Could not extract fileId from callback's key for user %s in team %s"
                 .formatted(userId, teamId));
 
-      var installer = installationService.findInstallerWithRotation(null, teamId, userId);
+      var actionUserId = extractActionUserId(callback, userId);
+      var installer = installationService.findInstallerWithRotation(null, teamId, actionUserId);
       if (installer == null)
         throw new DocumentCallbackException(
-            "Could not find an installer for user %s in team %s".formatted(userId, teamId));
+            "Could not find an installer for user %s in team %s".formatted(actionUserId, teamId));
 
       var maybeFile = findFile(fileId, installer.getInstallerUserAccessToken());
       if (maybeFile.isEmpty() || !maybeFile.get().isOk())
         throw new DocumentCallbackException(
-            "Failed to get file info from Slack for user %s in team %s".formatted(userId, teamId));
+            "Failed to get file info from Slack for user %s in team %s"
+                .formatted(actionUserId, teamId));
 
       try {
         var file = maybeFile.get().getFile();
         var sessionKey = keys.get(fileId);
 
         MDC.put("team_id", teamId);
-        MDC.put("user_id", userId);
+        MDC.put("user_id", actionUserId);
         MDC.put("file_id", file.getId());
 
         log.info("Session key retrieved: {}", sessionKey);
@@ -258,12 +285,13 @@ class DocumentSaveCallbackHandler implements DocumentCallbackRegistrar {
             installer.getInstallerUserAccessToken(),
             messageTs);
 
-        if (!file.getUser().equalsIgnoreCase(userId))
+        if (!file.getUser().equalsIgnoreCase(actionUserId))
           sendPersonalMessage(
-              file.getUser(), file.getName(), installer.getBotAccessToken(), userId);
+              file.getUser(), file.getName(), installer.getBotAccessToken(), actionUserId);
       } catch (IOException | SlackApiException e) {
         throw new DocumentCallbackException(
-            "Could not upload a new file for user %s in team %s".formatted(userId, teamId), e);
+            "Could not upload a new file for user %s in team %s".formatted(actionUserId, teamId),
+            e);
       } finally {
         keys.remove(fileId);
         MDC.clear();
