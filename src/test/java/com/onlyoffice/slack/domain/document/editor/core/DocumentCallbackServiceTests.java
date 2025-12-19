@@ -67,7 +67,12 @@ class DocumentCallbackServiceTests {
         .thenReturn("user");
 
     var settings =
-        SettingsResponse.builder().demoEnabled(false).header("header").secret("secret").build();
+        SettingsResponse.builder()
+            .demoEnabled(false)
+            .address("http://test")
+            .header("header")
+            .secret("secret")
+            .build();
 
     when(settingsService.findSettings(anyString())).thenReturn(settings);
     when(documentJwtManagerService.verifyToken(anyString(), anyString()))
