@@ -14,6 +14,8 @@
 package com.onlyoffice.slack.domain.slack.event.handler;
 
 import static com.slack.api.model.block.Blocks.input;
+import static com.slack.api.model.block.Blocks.section;
+import static com.slack.api.model.block.composition.BlockCompositions.markdownText;
 import static com.slack.api.model.block.composition.BlockCompositions.option;
 import static com.slack.api.model.block.composition.BlockCompositions.plainText;
 import static com.slack.api.model.block.element.BlockElements.plainTextInput;
@@ -49,6 +51,19 @@ public class SlackCreateDocumentCommandHandler implements SlackSlashCommandHandl
 
   private List<LayoutBlock> buildModalBlocks(Locale locale) {
     var blocks = new ArrayList<LayoutBlock>();
+
+    blocks.add(
+        section(
+            section ->
+                section
+                    .blockId("description")
+                    .text(
+                        markdownText(
+                            messageSource.getMessage(
+                                messageSourceSlackConfiguration
+                                    .getMessageCreateDocumentDescription(),
+                                null,
+                                locale)))));
 
     blocks.add(
         input(
