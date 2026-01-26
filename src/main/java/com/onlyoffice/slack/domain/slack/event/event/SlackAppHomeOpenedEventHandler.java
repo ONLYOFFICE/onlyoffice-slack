@@ -180,11 +180,6 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                                           .getMessageHomeCheckboxEnableDemo(),
                                       null,
                                       locale);
-                              var demoHelpText =
-                                  messageSource.getMessage(
-                                      messageSourceSlackConfiguration.getMessageHomeDemoHelp(),
-                                      null,
-                                      locale);
                               var checkboxBuilder =
                                   c.actionId("demo_enabled_checkbox")
                                       .options(
@@ -192,7 +187,6 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                                               option(
                                                   o ->
                                                       o.text(plainText(enableDemoText))
-                                                          .description(plainText(demoHelpText))
                                                           .value("demo_enabled"))));
                               if (settings != null && settings.isDemoEnabled()) {
                                 checkboxBuilder.initialOptions(
@@ -200,11 +194,20 @@ class SlackAppHomeOpenedEventHandler implements BoltEventHandler<AppHomeOpenedEv
                                         option(
                                             o ->
                                                 o.text(plainText(enableDemoText))
-                                                    .description(plainText(demoHelpText))
                                                     .value("demo_enabled"))));
                               }
                               return checkboxBuilder;
                             }))));
+    inputs.add(
+        context(
+            ctx ->
+                ctx.elements(
+                    List.of(
+                        markdownText(
+                            messageSource.getMessage(
+                                messageSourceSlackConfiguration.getMessageHomeDemoHelp(),
+                                null,
+                                locale))))));
 
     return inputs;
   }
