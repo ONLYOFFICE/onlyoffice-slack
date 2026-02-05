@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.5.9</version>
+		<relativePath/>
+	</parent>
+
+	<groupId>com.onlyoffice</groupId>
+	<artifactId>slack</artifactId>
+	<version>1.0.0</version>
+
+	<name>slack</name>
+	<description>This app seamlessly integrates ONLYOFFICE Docs into your Slack workspace, allowing you to create, view, and edit documents, spreadsheets, and presentations within your channels and direct messages.</description>
+	<url>https://github.com/ONLYOFFICE/onlyoffice-slack</url>
+
+	<inceptionYear>2025</inceptionYear>
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<email>integration@onlyoffice.com</email>
+			<organization>Ascensio System SIA</organization>
+			<organizationUrl>https://www.onlyoffice.com/</organizationUrl>
+		</developer>
+	</developers>
+
+	<properties>
+		<bolt.version>1.46.0</bolt.version>
+		<bucket4j.version>8.10.1</bucket4j.version>
+		<hazelcast.version>5.4.0</hazelcast.version>
+		<lettuce.version>7.2.1.RELEASE</lettuce.version>
+		<logstack.logback.encoder.version>8.0</logstack.logback.encoder.version>
+		<lombok.version>1.18.38</lombok.version>
+		<onlyoffice.sdk.version>1.5.0</onlyoffice.sdk.version>
+		<otel.version>2.18.1</otel.version>
+		<resilience4j.version>2.2.0</resilience4j.version>
+
+		<maven.formatter.plugin.version>2.24</maven.formatter.plugin.version>
+		<maven.optimizer.version>2.6.2</maven.optimizer.version>
+		<java.version>21</java.version>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>io.opentelemetry.instrumentation</groupId>
+				<artifactId>opentelemetry-instrumentation-bom</artifactId>
+				<version>${otel.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<!-- Spring Web Dependencies -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+
+		<!-- Spring Data Dependencies -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate.validator</groupId>
+			<artifactId>hibernate-validator</artifactId>
+		</dependency>
+
+		<!-- Spring Data Migration Dependencies -->
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-database-postgresql</artifactId>
+		</dependency>
+
+		<!-- Spring Caching Dependencies -->
+		<dependency>
+			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast-spring</artifactId>
+			<version>${hazelcast.version}</version>
+		</dependency>
+
+		<!-- Slack Dependencies -->
+		<dependency>
+			<groupId>com.slack.api</groupId>
+			<artifactId>bolt-jakarta-servlet</artifactId>
+			<version>${bolt.version}</version>
+		</dependency>
+
+		<!-- ONLYOFFICE Dependencies -->
+		<dependency>
+			<groupId>com.onlyoffice</groupId>
+			<artifactId>docs-integration-sdk</artifactId>
+			<version>${onlyoffice.sdk.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- Resilience Dependencies -->
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-spring-boot3</artifactId>
+			<version>${resilience4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.bucket4j</groupId>
+			<artifactId>bucket4j-core</artifactId>
+			<version>${bucket4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.bucket4j</groupId>
+			<artifactId>bucket4j-redis</artifactId>
+			<version>${bucket4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.lettuce</groupId>
+			<artifactId>lettuce-core</artifactId>
+			<version>${lettuce.version}</version>
+		</dependency>
+
+		<!-- Actuator, Tracing & Monitoring Dependencies -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.opentelemetry.instrumentation</groupId>
+			<artifactId>opentelemetry-spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-micrometer</artifactId>
+			<version>${resilience4j.version}</version>
+		</dependency>
+
+		<!-- Utility Dependencies -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${lombok.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Logging Dependencies -->
+		<dependency>
+			<groupId>net.logstash.logback</groupId>
+			<artifactId>logstash-logback-encoder</artifactId>
+			<version>${logstack.logback.encoder.version}</version>
+		</dependency>
+
+		<!-- Testing Dependencies -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>build-info</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>${lombok.version}</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<forkedProcessTimeoutInSeconds>300</forkedProcessTimeoutInSeconds>
+					<forkedProcessExitTimeoutInSeconds>60</forkedProcessExitTimeoutInSeconds>
+					<shutdown>kill</shutdown>
+					<excludes>
+						<exclude>**/integration/**/*Tests.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<configuration>
+					<forkedProcessTimeoutInSeconds>600</forkedProcessTimeoutInSeconds>
+					<forkedProcessExitTimeoutInSeconds>120</forkedProcessExitTimeoutInSeconds>
+					<shutdown>kill</shutdown>
+					<includes>
+						<include>**/integration/**/*Tests.java</include>
+					</includes>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.spotify.fmt</groupId>
+				<artifactId>fmt-maven-plugin</artifactId>
+				<version>${maven.formatter.plugin.version}</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>format</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.primefaces.extensions</groupId>
+				<artifactId>resources-optimizer-maven-plugin</artifactId>
+				<version>${maven.optimizer.version}</version>
+				<executions>
+					<execution>
+						<id>optimize-resources</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>optimize</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<inputDir>${project.build.directory}/classes</inputDir>
+					<resourcesSets>
+						<resourcesSet>
+							<inputDir>${project.build.directory}/classes/templates</inputDir>
+							<includes>
+								<include>**/*.html</include>
+							</includes>
+							<excludes>
+								<exclude>**/fragments/**</exclude>
+							</excludes>
+						</resourcesSet>
+						<resourcesSet>
+							<inputDir>${project.build.directory}/classes/static</inputDir>
+							<includes>
+								<include>**/*.css</include>
+								<include>**/*.js</include>
+							</includes>
+							<excludes>
+								<exclude>**/*.min.css</exclude>
+								<exclude>**/*.min.js</exclude>
+							</excludes>
+						</resourcesSet>
+					</resourcesSets>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

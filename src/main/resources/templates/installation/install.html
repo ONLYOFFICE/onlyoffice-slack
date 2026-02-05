@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!--
+        *
+        * (c) Copyright Ascensio System SIA 2025
+        *
+        * Licensed under the Apache License, Version 2.0 (the "License");
+        * you may not use this file except in compliance with the License.
+        * You may obtain a copy of the License at
+        *
+        *     http://www.apache.org/licenses/LICENSE-2.0
+        *
+        * Unless required by applicable law or agreed to in writing, software
+        * distributed under the License is distributed on an "AS IS" BASIS,
+        * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        * See the License for the specific language governing permissions and
+        * limitations under the License.
+        *
+        -->
+        <title>ONLYOFFICE</title>
+        <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+        <link rel="stylesheet" href="/styles/root.css">
+        <link rel="stylesheet" href="/styles/install.css">
+        <link href='https://fonts.googleapis.com/css?family=Open Sans' rel='stylesheet'>
+        <link href='https://fonts.googleapis.com/css?family=Lato:700,400&display=swap' rel='stylesheet'>
+    </head>
+    <body>
+        <div class="installation">
+            <img src="/images/logo.svg" alt="ONLYOFFICE Logo" class="installation__logo">
+            <h1 class="installation__title">
+                [[${title}]]
+            </h1>
+            <p class="installation__subtitle">
+                [[${subtitle}]]
+            </p>
+            <a th:href="${url}" class="installation__button">
+                [[${button}]]
+            </a>
+            <div class="installation__content">
+                <div class="features">
+                    <div class="features__item">
+                        <div class="features__icon">✓</div>
+                        <span>[[${featureEdit}]]</span>
+                    </div>
+                    <div class="features__item">
+                        <div class="features__icon">✓</div>
+                        <span>[[${featureCollaboration}]]</span>
+                    </div>
+                    <div class="features__item">
+                        <div class="features__icon">✓</div>
+                        <span>[[${featureFile}]]</span>
+                    </div>
+                    <div class="features__item">
+                        <div class="features__icon">✓</div>
+                        <span>[[${featureSecure}]]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,221 @@
+:root {
+    --bg-color: #fff;
+    --text-color: #222;
+    --text-secondary: #888;
+    --button-bg: #007A5A;
+    --button-hover: #005f47;
+    --button-text: #fff;
+    --body-bg: #f5f5f5;
+    --container-bg: inherit;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #1a1d21;
+        --text-color: #ffffff;
+        --text-secondary: #d1d2d380;
+        --button-bg: #00553d;
+        --button-hover: #007a5a;
+        --button-text: #f8f8f8;
+        --body-bg: #1a1d21;
+        --container-bg: #1a1d21;
+    }
+}
+
+.common-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+
+    font-family: 'Open Sans', Arial, sans-serif;
+
+    background: var(--bg-color);
+    color: var(--text-color);
+}
+
+body {
+    background-color: var(--body-bg);
+    color: var(--text-color);
+}
+
+.common-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+
+    padding: 20px;
+    border-radius: 0;
+
+    background: var(--container-bg);
+    color: var(--text-color);
+}
+
+.common__logo {
+    display: block;
+
+    width: 160px;
+    height: auto;
+    max-width: 80vw;
+
+    margin: 0 auto 32px auto;
+}
+
+.common-container__illustration {
+    display: block;
+
+    width: 360px;
+    height: 360px;
+    max-width: 90vw;
+    max-height: 60vh;
+
+    margin: 0 auto 0 auto;
+}
+
+.common-container__title-block {
+    margin-top: 24px;
+    margin-bottom: 16px;
+
+    text-align: center;
+
+    font-family: 'Lato', Arial, sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: 0;
+
+    color: var(--text-color);
+}
+
+.common-container__description {
+    margin-bottom: 16px;
+    margin-top: 0;
+
+    text-align: center;
+
+    font-family: 'Lato', Arial, sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0;
+
+    color: var(--text-secondary);
+}
+
+.common-container__button {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 220px;
+    width: auto;
+    height: 40px;
+
+    margin: 16px auto 0 auto;
+    padding: 0 16px;
+
+    text-align: center;
+    line-height: 1;
+    white-space: nowrap;
+
+    font-family: 'Open Sans', Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+
+    cursor: pointer;
+    border-radius: 8px;
+    border: none;
+    opacity: 1;
+
+    background: var(--button-bg);
+    color: var(--button-text);
+    transition: all 0.2s ease;
+}
+
+.common-container__button:hover {
+    background: var(--button-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.common-container__button:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.common__logo--light {
+    display: block;
+}
+
+.common__logo--dark {
+    display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    .common__logo--light {
+        display: none;
+    }
+
+    .common__logo--dark {
+        display: block;
+    }
+
+    .common-container__button:hover {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .common-container__button:active {
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+}
+
+@media (max-width: 500px) {
+    .common-container {
+        max-width: 98vw;
+        padding: 16px;
+    }
+    .common__logo {
+        width: 120px;
+        margin-bottom: 24px;
+    }
+    .common-container__illustration {
+        width: 90vw;
+        height: auto;
+        max-width: 360px;
+        max-height: 360px;
+
+        margin-bottom: 0;
+    }
+    .common-container__title-block {
+        margin-top: 16px;
+
+        font-size: 16px;
+        line-height: 22px;
+    }
+    .common-container__description {
+        font-size: 13px;
+        line-height: 18px;
+    }
+    .common-container__button {
+        min-width: 200px;
+        width: auto;
+        height: 36px;
+
+        padding: 0 14px;
+
+        font-size: 13px;
+    }
+}

@@ -1,0 +1,152 @@
+/**
+ * (c) Copyright Ascensio System SIA 2026
+ *
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
+ *
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.onlyoffice.slack.shared.configuration.message;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.context.annotation.Configuration;
+
+@Data
+@Builder
+@Configuration
+@NoArgsConstructor
+@AllArgsConstructor
+public class MessageSourceSlackConfiguration {
+  private String errorSettingsTitle = "error.settings.title";
+  private String errorSettingsButton = "error.settings.button";
+  private String errorSettingsInvalidConfigurationText = "error.settings.invalid.text";
+  private String errorSettingsIncompleteText = "error.settings.incomplete.text";
+  private String errorSettingsDemoText = "error.settings.demo.text";
+
+  private String errorSessionTitle = "error.session.title";
+  private String errorSessionText = "error.session.text";
+  private String errorSessionButton = "error.session.button";
+
+  private String errorAvailableTitle = "error.available.title";
+  private String errorAvailableText = "error.available.text";
+  private String errorAvailableButton = "error.available.button";
+
+  private String errorSlackApiTitle = "error.slack.api.title";
+  private String errorSlackApiText = "error.slack.api.text";
+  private String errorSlackApiButton = "error.slack.api.button";
+
+  private String errorRateLimiterTitle = "error.ratelimiter.title";
+  private String errorRateLimiterText = "error.ratelimiter.text";
+  private String errorRateLimiterButton = "error.ratelimiter.button";
+
+  private String errorGenericTitle = "error.generic.title";
+  private String errorGenericText = "error.generic.text";
+  private String errorGenericButton = "error.generic.button";
+
+  private String errorResourceTitle = "error.resource.title";
+  private String errorResourceText = "error.resource.text";
+  private String errorResourceButton = "error.resource.button";
+
+  private String messageCancellationTitle = "cancellation.title";
+  private String messageCancellationText = "cancellation.text";
+  private String messageCancellationButton = "cancellation.button";
+
+  private String messageCompletionTitle = "completion.title";
+  private String messageCompletionText = "completion.text";
+  private String messageCompletionButton = "completion.button";
+
+  private String messageHelpGreeting = "help.greeting";
+  private String messageHelpInstructions = "help.instructions";
+  private String messageHelpLearnMore = "help.learnMore";
+  private String messageHelpLearnMoreButton = "help.learnMoreButton";
+  private String messageHelpLearnMoreButtonEmoji = "help.learnMoreButton.emoji";
+  private String messageHelpFeedback = "help.feedback";
+  private String messageHelpFeedbackButton = "help.feedbackButton";
+
+  private String messageHomeTitle = "home.title";
+  private String messageHomeSettingsTitle = "home.settings.title";
+  private String messageHomeInputHttpsAddressLabel = "home.input.httpsAddress.label";
+  private String messageHomeInputHttpsAddressPlaceholder = "home.input.httpsAddress.placeholder";
+  private String messageHomeInputHttpsAddressHelp = "home.input.httpsAddress.help";
+  private String messageHomeInputSecretLabel = "home.input.secret.label";
+  private String messageHomeInputSecretPlaceholder = "home.input.secret.placeholder";
+  private String messageHomeInputHeaderLabel = "home.input.header.label";
+  private String messageHomeInputHeaderPlaceholder = "home.input.header.placeholder";
+  private String messageHomeInputDemoSettingsLabel = "home.input.demoSettings.label";
+  private String messageHomeCheckboxEnableDemo = "home.checkbox.enableDemo";
+  private String messageHomeButtonSaveSettings = "home.button.saveSettings";
+  private String messageHomeErrorRenderView = "home.error.renderView";
+  private String messageHomeWelcomeTitle = "home.welcome.title";
+  private String messageHomeWelcomeDescription = "home.welcome.description";
+  private String messageHomeWelcomeDescriptionNonAdmin = "home.welcome.description.nonadmin";
+  private String messageHomeReadMore = "home.readMore";
+  private String messageHomeSuggestFeature = "home.suggestFeature";
+  private String messageHomeReadMoreEmoji = "home.readMore.emoji";
+  private String messageHomeSuggestFeatureEmoji = "home.suggestFeature.emoji";
+  private String messageHomeCloudTitle = "home.cloud.title";
+  private String messageHomeCloudDescription = "home.cloud.description";
+  private String messageHomeCloudButton = "home.cloud.button";
+  private String messageHomeSecretHelp = "home.secret.help";
+  private String messageHomeHeaderHelp = "home.header.help";
+  private String messageHomeDemoHelp = "home.demo.help";
+
+  private String messageInstallButton = "install.button";
+  private String messageInstallTitle = "install.title";
+  private String messageInstallSubtitle = "install.subtitle";
+  private String messageInstallFeatureEdit = "install.feature.edit";
+  private String messageInstallFeatureCollaboration = "install.feature.collaboration";
+  private String messageInstallFeatureFileSupport = "install.feature.fileSupport";
+  private String messageInstallFeatureSecureEditing = "install.feature.secureEditing";
+
+  private String messageLoadingTitle = "loading.title";
+  private String messageLoadingDescription = "loading.description";
+  private String messageLoadingError = "loading.error";
+  private String messageLoadingRetry = "loading.retry";
+  private String messageLoadingCancel = "loading.cancel";
+
+  private String messageManagerModalTitle = "manager.modal.title";
+  private String messageManagerModalHeader = "manager.modal.header";
+  private String messageManagerModalFileInfo = "manager.modal.fileInfo";
+  private String messageManagerModalFileStatusPublic = "manager.modal.fileStatus.public";
+  private String messageManagerModalFileStatusPrivate = "manager.modal.fileStatus.private";
+  private String messageManagerModalNoFilesFound = "manager.modal.noFiles";
+  private String messageManagerModalOpenButton = "manager.modal.button.open";
+  private String messageManagerModalCloseButton = "manager.modal.button.close";
+
+  private String messageCreateDocumentTitle = "create.document.modal.title";
+  private String messageCreateDocumentSubmit = "create.document.modal.submit";
+  private String messageCreateDocumentLabel = "create.document.modal.title.label";
+  private String messageCreateDocumentPlaceholder = "create.document.modal.title.placeholder";
+  private String messageCreateDocumentName = "create.document.modal.title.name";
+  private String messageCreateDocumentDescription = "create.document.modal.description";
+  private String messageCreateDocumentTypeLabel = "create.document.modal.type.label";
+  private String messageCreateDocumentTypePlaceholder = "create.document.modal.type.placeholder";
+  private String messageCreateDocumentTypeDocument = "create.document.modal.type.document";
+  private String messageCreateDocumentTypeSpreadsheet = "create.document.modal.type.spreadsheet";
+  private String messageCreateDocumentTypePresentation = "create.document.modal.type.presentation";
+
+  private String messageSettingsSuccess = "settings.success.message";
+  private String messageSettingsSuccessDetails = "settings.success.details";
+  private String messageSettingsSuccessNextSteps = "settings.success.nextSteps";
+  private String messageSettingsSuccessNextStepsEdit = "settings.success.nextSteps.edit";
+  private String messageSettingsSuccessNextStepsCollaborate =
+      "settings.success.nextSteps.collaborate";
+  private String messageSettingsSuccessNextStepsManage = "settings.success.nextSteps.manage";
+
+  private String messageSettingsError = "settings.error.message";
+  private String messageSettingsErrorDetails = "settings.error.details";
+  private String messageSettingsErrorTroubleshooting = "settings.error.troubleshooting";
+  private String messageSettingsErrorTroubleshootingCheckConnection =
+      "settings.error.troubleshooting.checkConnection";
+  private String messageSettingsErrorTroubleshootingVerifyCredentials =
+      "settings.error.troubleshooting.verifyCredentials";
+  private String messageSettingsErrorTroubleshootingRetry = "settings.error.troubleshooting.retry";
+}

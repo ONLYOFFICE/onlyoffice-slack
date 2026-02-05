@@ -1,0 +1,227 @@
+:root {
+    --bg-color: #fff;
+    --text-color: #222;
+    --text-secondary: #888;
+    --button-bg: #007A5A;
+    --button-hover: #005f47;
+    --button-text: #fff;
+    --body-bg: #f5f5f5;
+    --container-bg: inherit;
+    --shadow: rgba(0, 0, 0, 0.1);
+    --error-bg: inherit;
+    --error-text: #222;
+    --link-color: #007A5A;
+    --link-hover: #00a873;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #1a1d21;
+        --text-color: #ffffff;
+        --text-secondary: #d1d2d380;
+        --button-bg: #00553d;
+        --button-hover: #007a5a;
+        --button-text: #f8f8f8;
+        --body-bg: #1a1d21;
+        --container-bg: #1a1d21;
+        --shadow: rgba(255, 255, 255, 0.1);
+        --error-bg: #1a1d21;
+        --error-text: #fff;
+        --link-color: #4db8a0;
+        --link-hover: #5de0b6;
+    }
+}
+
+.loading-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    min-height: 100vh;
+
+    margin: 0;
+    padding: 0;
+
+    font-family: 'Open Sans', Arial, sans-serif;
+
+    background: var(--body-bg);
+    color: var(--text-color);
+}
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    width: 100%;
+    max-width: 400px;
+
+    margin: 0 auto;
+    padding: 0;
+
+    border-radius: 0;
+
+    box-shadow: none;
+    background: var(--container-bg);
+    color: var(--text-color);
+}
+
+.loading__logo {
+    display: block;
+
+    width: 160px;
+    height: auto;
+    max-width: 80vw;
+
+    margin: 0 auto 32px auto;
+}
+
+.loading-container__spinner {
+    width: 48px;
+    height: 48px;
+
+    margin-bottom: 32px;
+
+    border: 4px solid #e6f0fa;
+    border-top: 4px solid #5dc0e8;
+    border-radius: 50%;
+    animation: loading-spin 1s linear infinite;
+}
+
+.loading-container__title {
+    margin-bottom: 8px;
+
+    font-family: 'Lato', Arial, sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 24px;
+    text-align: center;
+
+    color: var(--text-color);
+}
+
+.loading-container__description {
+    margin-bottom: 24px;
+
+    font-family: 'Lato', Arial, sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 16px;
+    text-align: center;
+
+    color: var(--text-secondary);
+}
+
+.loading-container__button {
+    box-sizing: border-box;
+    display: block;
+
+    width: 90px;
+    height: 36px;
+
+    margin: 0 auto;
+    padding: 6px 10px;
+
+    font-size: 14px;
+    font-family: 'Open Sans', Arial, sans-serif;
+    font-weight: 400;
+    text-decoration: none;
+    text-align: center;
+
+    border-radius: 8px;
+    border: none;
+
+    cursor: pointer;
+    opacity: 1;
+
+    background: var(--button-bg);
+    color: var(--button-text);
+    transition: background 0.2s;
+}
+
+.loading-container__button:hover {
+    background: var(--button-hover);
+}
+
+.loading-container__error-block {
+    background: var(--error-bg);
+}
+
+.loading-container__error-message {
+    color: var(--error-text);
+}
+
+.loading-container__link {
+    color: var(--link-color);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    transition: color 0.2s, text-decoration-color 0.2s;
+}
+
+.loading-container__link:visited {
+    color: var(--link-color);
+}
+
+.loading-container__link:hover {
+    color: var(--link-hover);
+    text-decoration-color: var(--link-hover);
+}
+
+.loading__logo--light {
+    display: block;
+}
+
+.loading__logo--dark {
+    display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    .loading__logo--light {
+        display: none;
+    }
+    
+    .loading__logo--dark {
+        display: block;
+    }
+}
+
+@keyframes loading-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 500px) {
+    .loading-container {
+        max-width: 98vw;
+    }
+    .loading__logo {
+        width: 120px;
+
+        margin-bottom: 24px;
+    }
+    .loading-container__spinner {
+        width: 36px;
+        height: 36px;
+
+        margin-bottom: 24px;
+    }
+    .loading-container__title {
+        font-size: 16px;
+        line-height: 20px;
+    }
+    .loading-container__description {
+        font-size: 12px;
+        line-height: 15px;
+    }
+    .loading-container__button {
+        width: 80px;
+        height: 32px;
+
+        padding: 6px 8px;
+
+        font-size: 13px;
+    }
+} 

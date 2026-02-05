@@ -1,0 +1,46 @@
+include:
+  - docker-compose-common.yml
+
+services:
+  onlyoffice-slack:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: onlyoffice-slack
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-p}
+      OTEL_SDK_DISABLED: ${OTEL_SDK_DISABLED:-true}
+
+      SERVER_BASE_ADDRESS: ${SERVER_BASE_ADDRESS}
+
+      SERVER_DEMO_ADDRESS: ${SERVER_DEMO_ADDRESS}
+      SERVER_DEMO_HEADER: ${SERVER_DEMO_HEADER}
+      SERVER_DEMO_SECRET: ${SERVER_DEMO_SECRET}
+
+      SLACK_APPLICATION_ID: ${SLACK_APPLICATION_ID}
+      SLACK_APPLICATION_CLIENT_ID: ${SLACK_APPLICATION_CLIENT_ID}
+      SLACK_APPLICATION_CLIENT_SECRET: ${SLACK_APPLICATION_CLIENT_SECRET}
+      SLACK_APPLICATION_SIGNING_SECRET: ${SLACK_APPLICATION_SIGNING_SECRET}
+
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/slack
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - slack_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3

@@ -1,0 +1,64 @@
+hazelcast:
+  cluster-name: onlyoffice-services
+  network:
+    join:
+      tcp-ip:
+        enabled: true
+        member-list:
+          - localhost
+      kubernetes:
+        enabled: false
+        namespace: default
+        service-name: onlyoffice-service
+  map:
+    bots:
+      in-memory-format: BINARY
+      backup-count: 1
+      time-to-live-seconds: 100
+      max-idle-seconds: 100
+      eviction:
+        eviction-policy: LRU
+        max-size-policy: USED_HEAP_SIZE
+        size: 1000
+    states:
+      in-memory-format: BINARY
+      backup-count: 1
+      time-to-live-seconds: 600
+      max-idle-seconds: 600
+      eviction:
+        eviction-policy: LRU
+        max-size-policy: USED_HEAP_SIZE
+        size: 1000
+    sessions:
+      in-memory-format: BINARY
+      backup-count: 1
+      time-to-live-seconds: 10
+      max-idle-seconds: 10
+      eviction:
+        eviction-policy: LRU
+        max-size-policy: USED_HEAP_SIZE
+        size: 1000
+    installers:
+      in-memory-format: BINARY
+      backup-count: 1
+      time-to-live-seconds: 100
+      max-idle-seconds: 100
+      eviction:
+        eviction-policy: LRU
+        max-size-policy: USED_HEAP_SIZE
+        size: 1000
+    keys:
+      in-memory-format: BINARY
+      backup-count: 1
+      time-to-live-seconds: 10
+      max-idle-seconds: 10
+      eviction:
+        eviction-policy: LRU
+        max-size-policy: USED_HEAP_SIZE
+        size: 100
+      map-store:
+        enabled: true
+        factory-class-name: com.onlyoffice.slack.shared.configuration.cache.HazelcastFileSessionMapStoreFactory
+        write-delay-seconds: 0
+        write-batch-size: 1
+        write-coalescing: true

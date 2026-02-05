@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, caller-scalable=no, minimal-ui" />
+        <!--
+        *
+        * (c) Copyright Ascensio System SIA 2025
+        *
+        * Licensed under the Apache License, Version 2.0 (the "License");
+        * you may not use this file except in compliance with the License.
+        * You may obtain a copy of the License at
+        *
+        *     http://www.apache.org/licenses/LICENSE-2.0
+        *
+        * Unless required by applicable law or agreed to in writing, software
+        * distributed under the License is distributed on an "AS IS" BASIS,
+        * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        * See the License for the specific language governing permissions and
+        * limitations under the License.
+        *
+        -->
+        <title>ONLYOFFICE</title>
+        <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+        <link rel="stylesheet" href="/styles/root.css">
+        <link rel="stylesheet" href="/styles/loading.css">
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+        <link href='https://fonts.googleapis.com/css?family=Lato:700,400&display=swap' rel='stylesheet'>
+    </head>
+    <body class="loading-page">
+        <div class="loading-container">
+            <img src="/images/logo_long.svg" alt="ONLYOFFICE Logo" class="loading__logo loading__logo--light">
+            <img src="/images/logo_long_dark.svg" alt="ONLYOFFICE Logo" class="loading__logo loading__logo--dark">
+            <div class="loading-container__spinner"></div>
+            <div class="loading-container__title">[[${title}]]</div>
+            <div class="loading-container__description">[[${description}]]</div>
+            <div id="error-block" class="loading-container__error-block" style="display:none; flex-direction:column; align-items:center; justify-content:center;">
+                <div id="error-message" class="loading-container__error-message" style="text-align:center; margin-bottom:16px;" th:utext="${error}">
+                </div>
+                <button id="retry-button" class="loading-container__button" style="margin:0 auto;">[[${retry}]]</button>
+            </div>
+            <button id="cancel-button" class="loading-container__button" onclick="window.location.href='/'">[[${cancel}]]</button>
+        </div>
+        <script>
+            var sessionId = "[[${sid}]]";
+            let maxWaitTime, pollInterval, startTime;
+
+            function getLocaleFromUrl() {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get('locale');
+            }
+
+            function buildUrlWithParams(baseUrl, sessionId) {
+                const locale = getLocaleFromUrl();
+                let url = `${baseUrl}?session=${encodeURIComponent(sessionId)}`;
+                if (locale)
+                    url += `&locale=${encodeURIComponent(locale)}`;
+                return url;
+            }
+
+            function showError() {
+                document.querySelector('.loading-container__spinner').style.display = 'none';
+                document.querySelector('.loading-container__title').style.display = 'none';
+                document.querySelector('.loading-container__description').style.display = 'none';
+                document.getElementById('error-block').style.display = 'flex';
+                document.getElementById('cancel-button').style.display = 'none';
+            }
+
+            function checkSessionStatus() {
+                const currentTime = Date.now();
+                const elapsed = currentTime - startTime;
+
+                if (elapsed >= maxWaitTime) {
+                    showError();
+                    return;
+                }
+
+                const statusUrl = buildUrlWithParams('/editor/status', sessionId);
+                fetch(statusUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.ready) {
+                            const contentUrl = buildUrlWithParams('editor/content', sessionId);
+                            window.location.href = contentUrl;
+                        } else {
+                            setTimeout(checkSessionStatus, pollInterval);
+                        }
+                    })
+                    .catch(error => {
+                        if (elapsed < maxWaitTime) {
+                            setTimeout(checkSessionStatus, pollInterval);
+                        } else {
+                            showError();
+                        }
+                    });
+            }
+
+            function initializeEditor() {
+                if (!sessionId || sessionId.indexOf('$') !== -1 || sessionId.indexOf('{') !== -1) {
+                    showError();
+                    return;
+                }
+                maxWaitTime = 5000;
+                pollInterval = 500;
+                startTime = Date.now();
+                setTimeout(checkSessionStatus, 100);
+            }
+
+            document.getElementById('retry-button').onclick = function() {
+                window.location.reload();
+            };
+
+            document.addEventListener('DOMContentLoaded', initializeEditor);
+        </script>
+    </body>
+</html>
